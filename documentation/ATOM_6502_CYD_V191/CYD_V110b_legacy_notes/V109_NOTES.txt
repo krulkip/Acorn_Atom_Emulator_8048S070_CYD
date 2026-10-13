@@ -1,0 +1,39 @@
+ATOM 6502 CYD V109
+==================
+
+Baseline: tested V108a.
+
+Changes
+-------
+1. Generic direct-scanner keyboard input
+   All host characters that map to an Atom physical matrix key may now be
+   claimed by software that directly scans the 8255 keyboard or calls FE71
+   outside the normal OSRDCH path.  Normal BASIC/OSRDCH typing remains FIFO
+   input. The V101c held-key/auto-repeat model is retained. ESC keeps its
+   dedicated immediate path. This is intended to allow unmodified games such
+   as FROGGER (T/B/F/H) to work without game-specific patches.
+
+2. Directory-aware *CAT rooted at /ATOM/TAPES
+   *CAT          lists current directory
+   *CAT GAMES1   enters child GAMES1 if present, then lists it
+   *CAT ..       moves to parent, never above /ATOM/TAPES
+   missing child leaves current directory unchanged
+   directories appear in the genuine ROM catalogue as <NAME> synthetic entries
+   LOAD auto-mount, SAVE and *MOUNT all use the selected current directory.
+
+3. Cleanup
+   Removed redundant oswrch_hits. last_oswrch_count is incremented directly.
+
+Unchanged
+---------
+V108 low-overhead [CPU] diagnostic, 1 MHz governor, Turbo LOAD/SAVE, automatic
+named LOAD mounting, screenshots, audio, video, FE71 OSRDCH discrimination,
+ESC and ~BREAK handling.
+
+Suggested tests
+---------------
+- BASIC typing and ~BREAK
+- LOAD "INVADERSZX": Z/X/SPACE
+- LOAD "FROGGER": T/B/F/H
+- *CAT, *CAT child, *CAT ..
+- LOAD/SAVE in a child directory

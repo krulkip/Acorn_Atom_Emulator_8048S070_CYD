@@ -1,0 +1,36 @@
+ATOM 6502 CYD V110
+===================
+
+Baseline: V109l.
+
+V110 formalizes the Atom's three keyboard-use cases:
+
+1. Normal Kernel OSRDCH
+   - unchanged FIFO typing path.
+
+2. Raw matrix scanning (B000/B001)
+   - unchanged proven V101c held-key ownership model.
+   - InvadersZX behavior is intentionally frozen.
+
+3. External calls to Kernel FE71
+   - new generic discrete-key path.
+   - one FIFO-head host character is exposed as one physical matrix key for
+     the FE71 scan.
+   - FEB1 consumes that one character after successful acquisition.
+   - no 700 ms V101c ownership is applied to external FE71.
+   - this targets programs such as Frogger that call FE71 for one keypress
+     at a time.
+
+There are no game names or game-specific key lists in the implementation.
+
+Unchanged:
+- V109l/V101c raw direct-key timings and behavior.
+- *CAT directory navigation.
+- LOAD/SAVE/tape.
+- video/colour/screenshots.
+- CPU diagnostic.
+- ~BREAK / ESC.
+
+Validation:
+- atom_kbd.c passed gcc -std=c11 -fsyntax-only.
+- all other .c/.cpp/.h source files are byte-identical to V109l.

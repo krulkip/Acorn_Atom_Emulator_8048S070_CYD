@@ -1,0 +1,62 @@
+ATOM 6502 CYD V067
+==================
+
+Purpose
+-------
+Real Atom cassette SAVE to SD, added on top of the proven V066 real cassette LOAD.
+
+Architecture
+------------
+The Atom BASIC SAVE command calls the normal OSSAVE vector. The Kernel then sends
+every byte through its own OSBPUT routine. V067 does not copy BASIC memory directly
+to a file and does not intercept the OSBPUT accumulator.
+
+Instead, V067 watches the actual emulated 8255 Port-C writes produced by OSBPUT:
+- the 2.4-kHz hardware path represents logical 1
+- the 1.2-kHz PC0-toggled path represents logical 0
+
+Those 300-baud bits are reconstructed into start + 8 data + stop framed bytes.
+The resulting genuine Atom cassette blocks are validated (preamble, header and
+checksum) and only then converted to standard .atm format and written to SD.
+
+Saved files
+-----------
+/ATOM/TAPES/<Atom filename>.atm
+
+Existing same-name files are replaced. The newly saved ATM is automatically mounted
+as the current virtual cassette so it can immediately be LOADed through the V066
+input waveform path.
+
+Acceptance test
+---------------
+At the Atom prompt:
+
+10 PRINT "HELLO FROM ATOM"
+20 END
+SAVE "HELLO"
+
+The real ROM should display RECORD TAPE and wait for a key. Press RETURN once.
+After the cassette leader and save complete, Serial should report approximately:
+
+[TAPE-SAVE] Captured final block (...)
+[TAPE-SAVE] Wrote /ATOM/TAPES/HELLO.atm
+[TAPE-SAVE] Name="HELLO" load=$.... exec=$.... length=... frameErrors=0
+[TAPE] Mounted ATM: /ATOM/TAPES/HELLO.atm
+
+Then alter the program:
+
+10 PRINT "CHANGED"
+LIST
+
+Now restore the SD copy using the real Atom cassette LOAD path:
+
+LOAD "HELLO"
+
+When PLAY TAPE appears, press RETURN once. Then:
+
+LIST
+RUN
+
+Expected result: the original HELLO FROM ATOM program is restored and runs.
+
+V066 LOAD, SD, video, keyboard, colour and speaker paths are otherwise unchanged.

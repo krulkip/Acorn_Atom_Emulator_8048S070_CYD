@@ -1,0 +1,22 @@
+V154 - BBC BASIC clean pre-ASBK state diagnostic
+
+Base: V153/V139 line.
+
+Purpose:
+- Stop ASBK-S from affecting BBC BASIC at all.
+- At the first Kernel OSRDCH entry ($FE94), where V139 normally injects LL97,
+  capture the complete zero page $0000-$00FF and OS vector table $0200-$021B.
+- LL97 is skipped completely.
+- On first entry to ATBASIC3 ($4000-$7FFF), restore that captured zero page and
+  vector table before BBC startup executes.
+
+Unchanged:
+- ATBASIC3 remains at $4000-$7FFF.
+- ATMMC3E ROM remains loaded.
+- 6522 mapping unchanged.
+- No keyboard/audio/SD/display changes.
+
+Important:
+This is intentionally a CLEAN diagnostic. Because ASBK-S V24 is not run, any
+AtoMMC vector setup that depended on LL97 may be absent. The test target is BBC
+BASIC parser/numeric behaviour, not *CAT.

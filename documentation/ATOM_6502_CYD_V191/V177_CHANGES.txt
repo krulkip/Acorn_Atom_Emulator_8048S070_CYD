@@ -1,0 +1,16 @@
+V177 - clean BBC handover after proven LINK #4000
+
+Based directly on the working V174/V176 LINK #4000 path.
+
+- Removes the attempted CLEAR 0 command. CLEAR is a BASIC workspace command and
+  does not provide the required display handover.
+- SHIFT+BREAK again feeds only "LINK #4000" + CR, one character per genuine
+  Atom OSRDCH request (the proven V173/V174 pacing).
+- On the first execution in BBC BASIC ($4000-$7FFF), before BBC can print its
+  startup text, V177:
+    * fills Mode-0 VRAM $8000-$81FF with $40 (blank),
+    * sets Atom COS cursor line pointer $DE/$DF to $8000,
+    * sets cursor column $E0 to 0,
+    * leaves cursor on/off byte $E1 unchanged.
+- Ordinary BREAK is unchanged.
+- ASBK remains deliberately disabled.

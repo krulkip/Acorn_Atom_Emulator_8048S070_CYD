@@ -1,0 +1,75 @@
+ACORN ATOM+ V131
+================
+
+V131 is based directly on the known V130 source.
+
+Reason for the change
+---------------------
+AtoMMC v3.02 installs its star-command COMVEC at:
+
+    $0206/$0207 = $E0DE
+
+The historical ASBK-S LL97 initializer restores its saved standard Atom
+page-2 vector table.  In ASBK-S V21 that table contained the original
+Kernel COMVEC:
+
+    $0206/$0207 = $F8EF
+
+Therefore after ASBK-S initialization:
+
+    *CAT -> Kernel $FFF7 -> ($0206) -> $F8EF
+
+instead of:
+
+    *CAT -> Kernel $FFF7 -> ($0206) -> $E0DE -> AtoMMC
+
+The result was the original cassette CAT path ("PLAY TAPE"), and pathname
+commands such as *CAT Games05 / *CWD Games05 failed.
+
+ASBK-S V22
+----------
+The machine code and all runtime addresses are unchanged from V21.
+
+Only the saved vector table built by the ASBK-S source is changed:
+
+    R+2 = $DE
+    R+3 = $E0
+
+so LL97 restores AtoMMC's COMVEC $E0DE instead of the original Kernel
+COMVEC $F8EF.
+
+Source addition:
+
+    3042 REM V22 KEEP ATOMMC COMMAND VECTOR
+    3044 ?(R+2)=#DE;?(R+3)=#E0
+
+This is deliberately in ASBK-S rather than repaired later by the emulator
+sketch.  ASBK-S was written before AtoMMC existed, so V22 is the
+ACORN ATOM+ compatibility version.
+
+Files
+-----
+ASBK source : ASBK_Schakelsoft_V22_AtoMMC.txt
+ASBK binary : data/ASBK-S_v22.bin
+Length      : 1633 bytes
+Atom checksum: 057E
+
+The emulator loader now loads /ASBK-S_v22.bin at $1000.
+
+No post-LL97 COMVEC repair is present in the V131 sketch.
+
+Acceptance tests
+----------------
+  *CAT
+  *CAT Games05
+  *CWD Games05
+  *CAT
+
+  ?#BFFF=1
+  SHOW
+
+  SALFAA command
+  PCBOX command
+
+  LOAD "MINOTAUR"
+  RUN

@@ -1,0 +1,48 @@
+ATOM 6502 CYD V109l
+====================
+
+Baseline
+--------
+V109e, the confirmed-good filesystem/LOAD/*CAT version.
+
+Purpose
+-------
+Return strictly to the proven V101c direct-key principles, generalized to all
+mapped Atom keys.
+
+V109e already contains the correct V101c mechanics:
+- first host character enters the ordered FIFO;
+- genuine OSRDCH may consume it normally;
+- a direct matrix scanner may claim the FIFO head only when it scans the
+  matching physical row;
+- once claimed, same-key host repeats refresh the one physical contact and
+  do not queue future actions;
+- ownership expiry is checked before repeats may be treated as held-key
+  evidence;
+- stale consecutive repeats are purged after the physical key releases.
+
+V109l changes ONLY the two timing constants back to the exact V101c values:
+
+  first physical press   20 ms   (unchanged)
+  repeat physical hold   70 ms   (V109e had 40 ms)
+  repeat ownership       700 ms  (V109e had 100 ms)
+
+The only conceptual generalization relative to V101c is:
+  Z/X/SPACE only  ->  every mapped Atom key (except ESC special path)
+
+No new direct-scan state machine is introduced.
+
+Unchanged byte-for-byte from V109e except atom_kbd.c and version label:
+- LOAD / auto-mount
+- SAVE
+- *CAT directories
+- tape
+- video / colour
+- screenshot
+- CPU diagnostic
+- audio
+
+Validation
+----------
+- atom_kbd.c syntax check passed.
+- all other .c/.cpp/.h files verified byte-identical to V109e.

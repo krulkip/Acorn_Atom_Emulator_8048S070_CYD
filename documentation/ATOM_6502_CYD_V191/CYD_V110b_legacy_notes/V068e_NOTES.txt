@@ -1,0 +1,52 @@
+ATOM 6502 CYD V068e
+===================
+
+Baseline
+--------
+Built from working V068d, which proved ROM-native *CAT.
+
+Changes
+-------
+1. Automatic CTRL-equivalent at the end of the synthetic catalogue cassette.
+   The real Atom ROM sees active-low CTRL on B001 bit 6 and exits *CAT via its
+   normal CTRL-abort path. No host PC jump is used.
+
+2. Accurate catalogue block-length field.
+   Atom *CAT prints the zero-based first-block byte count:
+     16 bytes -> 0F
+     36 bytes -> 23
+     >=256 bytes -> FF
+
+3. Emulator-only silent *MOUNT filename.
+   Examples:
+     *MOUNT HELLO
+     *MOUNT V066TEST
+     *MOUNT "HELLO"
+   .atm suffix is optional and matching is case-insensitive.
+   Success/failure is reported on Serial only to avoid touching Atom display
+   output from host code.
+
+4. After *CAT exits, the cassette that had been mounted before *CAT is restored.
+
+Unchanged
+---------
+- Genuine ROM-native *CAT display path
+- V067a SAVE
+- V066 LOAD
+- speaker/video/keyboard baseline
+
+Test
+----
+*CAT
+
+Expected:
+HELLO      2900 C2B2 0000 23
+V066TEST   2800 2800 0000 0F
+
+After the last file, *CAT should return automatically to the > prompt.
+
+Then:
+*MOUNT HELLO
+LOAD "HELLO"
+
+Press RETURN at PLAY TAPE. Serial should show [MOUNT] Mounted HELLO.

@@ -1,0 +1,6 @@
+V158 - BBC BASIC numeric evaluator diagnostic
+Based directly on V157/V155 clean BBC baseline.
+No behavioural changes.
+Adds a bounded control-flow trace starting at physical ATBASIC3 $5B17.
+Logs JSR/JMP/RTS/RTI destinations/registers and ZP $2A-$36, plus checkpoints at $4E05/$5ECD/$7533.
+Test PRINT 2 first, then PRINT 2+2.

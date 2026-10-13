@@ -1,0 +1,10 @@
+V188 - frozen stable keyboard baseline
+
+Based exactly on tested V187.
+
+Changes from V187:
+- Removed only the temporary 5-second [V187-KBD] scan-rate timing counters/report.
+- No functional keyboard, I2C, FE71, BREAK, ASBK-S, AtoMMC2, BBC BASIC, CPU, display, audio, or filesystem changes.
+- Retains V187 direct ESP32-S3 GPIO output-enable software-I2C implementation with true released/high-impedance SDA/SCL lines.
+
+V188 is the frozen known-good baseline for subsequent FE71/Frogger experiments.

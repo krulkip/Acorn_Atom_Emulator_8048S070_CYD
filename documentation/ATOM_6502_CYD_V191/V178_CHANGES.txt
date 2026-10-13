@@ -1,0 +1,13 @@
+V178 - ASBK-S V24 only in Atom mode
+
+Baseline: proven V177 BBC boot.
+
+- Ordinary cold Atom boot and ordinary BREAK restore the proven V141/V139
+  ASBK-S V24 initialization at the first post-reset OSRDCH ($FE94).
+- After BREAK, V24 is reloaded into RAM $1000-$1660 before LL97 at $1005.
+- SHIFT+BREAK does NOT reload or initialize ASBK-S. The real Atom reset clears
+  the ASBK RAM workspace, natural vectors are retained, and the proven V177
+  one-character-per-OSRDCH LINK #4000 path enters BBC BASIC.
+- V177 BBC screen clear/home on entry to $4000-$7FFF is unchanged.
+- ASBK-S V24 is unchanged: static AtoMMC V3.02E compatibility vectors,
+  including COMVEC $E0DE and the proven filing vectors.

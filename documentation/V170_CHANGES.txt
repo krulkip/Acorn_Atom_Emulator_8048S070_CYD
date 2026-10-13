@@ -1,0 +1,17 @@
+V170 - SHIFT+BREAK BBC BASIC boot experiment
+=============================================
+Baseline: frozen, user-confirmed V166.
+
+Only BREAK/SHIFT+BREAK handling is changed.
+
+- Ordinary physical BREAK remains the normal atom_request_break() path.
+- Host ~BREAK is unchanged.
+- SHIFT+BREAK is latched on the physical keyboard.
+- V170 waits until both SHIFT and BREAK have been physically released before
+  requesting the normal Atom reset. This prevents held SHIFT affecting startup.
+- It records the OSWRCH count before reset and waits for a later Atom '>' output.
+- At that prompt it queues the exact ASCII string "LINK #4000" plus CR through
+  the existing atom_kbd_push_ascii() / serial keyboard FIFO path.
+- The MCP keyboard is never disabled or hidden.
+- V166 6522 mapping at $B800-$B80F is unchanged.
+- BBC BASIC ATBASIC3 and all AtoMMC/keyboard/audio/display behaviour are unchanged.

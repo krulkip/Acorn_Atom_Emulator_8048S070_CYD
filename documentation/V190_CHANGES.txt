@@ -1,0 +1,16 @@
+V190 - external FE71 physical-key event latch
+
+Base: frozen V188.
+
+Change:
+- Physical MCP23017 keyboard scanning and normal held matrix behaviour are unchanged.
+- A newly pressed physical matrix key is retained as one recent one-shot event for up to 750 ms.
+- An external JSR $FE71 may consume that event if no serial FIFO key is waiting.
+- Existing V110b serial FIFO external-FE71 behaviour is unchanged and has priority.
+- Normal OSRDCH acceptance clears any stale physical FE71 event.
+- Raw/direct matrix readers continue to see only genuine current physical state.
+- No Frogger-specific code, addresses, timing or patches.
+
+Purpose:
+A short real-key tap can otherwise begin and end between two external FE71 calls.
+The latch gives the physical keyboard the same discrete-event reliability that serial FIFO input already has, without altering normal matrix semantics.

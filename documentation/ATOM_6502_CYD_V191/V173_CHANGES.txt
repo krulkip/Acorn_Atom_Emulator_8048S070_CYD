@@ -1,0 +1,10 @@
+V173 - SHIFT+BREAK BBC command pacing
+
+Based directly on V172. Atom boot/reset and ASBK-disabled test state are unchanged.
+
+Change: LINK 16384 is no longer queued as a burst. The CPU task counts genuine
+entries to Kernel OSRDCH at $FE94 and loop() injects exactly one command character
+for each OSRDCH request. This addresses the V172 observation that LINK 16384
+arrived as LINK 1684.
+
+Expected SHIFT+BREAK result: LINK 16384 followed by entry to BBC BASIC.

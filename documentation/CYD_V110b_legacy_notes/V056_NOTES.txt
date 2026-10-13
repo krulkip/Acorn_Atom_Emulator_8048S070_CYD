@@ -1,0 +1,24 @@
+V056 - first real 6847 graphics renderer
+
+Baseline: V055.
+
+Changes:
+- Preserves V055 Mode-0 text renderer unchanged.
+- Detects the VDG mode from the high nibble of the last $B000 write.
+- Adds Mode 1 ($30) rendering for 128x64 one-bit graphics.
+- Reads Mode-1 VRAM from $8000-$83FF (1024 bytes, 16 bytes/row).
+- Uses bit 7 as the leftmost pixel, matching the Atom ROM mask table.
+- Renders each logical pixel as the 6847 native 2x3 raster block, producing
+  a 256x192 image centred on the TFT.
+- Uses integer scaling of that native 256x192 raster for larger TFT_eSPI panels.
+- Clears and forces a complete redraw when the VDG high-nibble mode changes.
+
+Deliberately unchanged:
+- V055 Mode-0 character mapping, including $40 = blank.
+- V054 F-ROM mapping fix.
+- Keyboard matrix, ESC/BREAK, flyback timing, CPU/VIA behaviour.
+- TFT_eSPI board selection via tft_board_select.h / tft_setup.h.
+
+Not implemented yet:
+- Mode 2, Mode 3, Mode 4 graphics.
+- Full Mode-0 semigraphics colour rendering.

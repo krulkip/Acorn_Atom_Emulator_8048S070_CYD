@@ -1,0 +1,7 @@
+V191 package organisation, 2026-10-09
+- Historical .txt notes relocated from firmware sketch directories to documentation/<sketch>/, retaining subfolders.
+- Functional SD_TEST_FILES/EXECDEMO.TXT retained in place.
+- Added original prepare_atom_roms_FINAL_v10.py to Roms/.
+- README corrections and keyboard address guidance.
+- Firmware code, ROMs, and V097 STLs unchanged.
+- Existing README PDFs are retained as supplied and are not regenerated; consult README.md for the latest edits.

@@ -1,0 +1,13 @@
+V068d is rebased directly on proven V067a.
+
+*CAT is no longer host-printed. On entry to the genuine Atom ROM *CAT routine
+at $FA2A, the emulator scans /ATOM/TAPES and builds a synthetic cassette with
+one valid cassette header per .atm file. The existing V066 PC5 waveform engine
+feeds those headers to the unchanged ROM, which prints the catalogue itself.
+
+No PC redirection, generated 6502 code, direct TFT text, or host OSWRCH calls.
+V067a SAVE and V066 LOAD remain unchanged.
+
+First test: type *CAT. Serial should show [CAT] entries and the Atom screen
+should show filenames via its own ROM. After the final name, CTRL can be used
+to stop the genuine catalogue search.

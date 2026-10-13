@@ -1,0 +1,16 @@
+CYD V190 PORT8 changes from tested PORT7
+==========================================
+
+1. Restored the exact V190 one-shot atom_scan_task startup mechanism that PORT5
+   had temporarily omitted for diagnostics. It waits for the complete
+   "ACORN ATOM + ATOMMC2" screen banner, then invokes the existing V190
+   atom_scan_for_banner() cleanup so the visible banner becomes "ACORN ATOM+".
+   This changes screen RAM only; AtoMMC2 remains initialized.
+
+2. JC2432W328 front RGB LED disabled at the start of setup(): GPIO 4, 16 and 17
+   are configured OUTPUT and driven HIGH (active-LOW RGB channels).
+
+3. No changes to the tested PORT7 CYD video renderer, ASBK-S V24, AtoMMC,
+   A-ROM banking, SD, sound, CPU emulation, or FE71 logic.
+
+4. MCP23017 hardware keyboard remains intentionally bypassed pending replacement.

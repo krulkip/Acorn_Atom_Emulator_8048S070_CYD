@@ -1,0 +1,18 @@
+V172 - SHIFT+BREAK BBC entry: avoid synthetic shifted '#'
+
+Based directly on tested V171.
+
+V171 proved the timing is correct: after SHIFT+BREAK the normal Atom reset
+reaches Kernel OSRDCH at $FE94 and the BBC command is queued at that point.
+However the synthetic keyboard path dropped the shifted '#' character, so the
+screen received "LINK 4000" (decimal 4000), producing Error 162.
+
+V172 changes only the queued BBC entry command to:
+
+    LINK 16384
+
+16384 decimal is $4000, so this is exactly the same target address as
+"LINK #4000" but does not require the synthetic SHIFT+# combination.
+
+Ordinary BREAK, reset timing, ASBK-disabled state, keyboard, tape and filesystem
+behaviour are otherwise unchanged from V171.

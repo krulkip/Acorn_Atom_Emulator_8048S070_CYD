@@ -1,0 +1,32 @@
+# Acorn Atom+ V191 repository-wide Git exclusions
+# Keep all files locally; only authorised ROMs may be committed.
+
+# Never commit downloaded ZIP archives or generated ROM output.
+*.zip
+**/data_ready/
+**/_romscan_work/
+**/ROM_REPORT.txt
+**/__pycache__/
+*.pyc
+
+# Roms/: default deny all files, then allow the preparation scripts
+# and the three ROM images with redistribution permission.
+/Roms/**
+!/Roms/
+!/Roms/*.py
+!/Roms/ATMMC3E.rom
+!/Roms/ASBK-I_v1.03.rom
+!/Roms/ASBK-S_v24.bin
+
+# Firmware data directories: default deny all files, including
+# extensionless ROMs and duplicate names such as ATBASIC3 (3).
+# Allow only the same three authorised ROM images.
+**/data/**
+!**/data/
+!**/data/ATMMC3E.rom
+!**/data/ASBK-I_v1.03.rom
+!**/data/ASBK-S_v24.bin
+
+# The rules above intentionally exclude all other files in firmware
+# data/ directories. If a firmware data/ directory contains non-ROM
+# assets that need publishing, review and allow them explicitly.

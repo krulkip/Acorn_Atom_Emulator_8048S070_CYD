@@ -1,0 +1,13 @@
+V161 - BBC BASIC expression text-pointer diagnostic
+
+Based directly on V158/V155 clean BBC baseline. No behavioural changes.
+ASBK remains absent; Atom MOS/AtoMMC and 6522 behaviour are unchanged.
+
+Targeted diagnostics:
+- At physical ATBASIC3 $5B17 and $6DC0, logs $19/$1A expression pointer, $1B cursor, effective address and byte.
+- Dumps 32 bytes around the effective address.
+- Dumps BBC input buffer $9F00-$9F1F.
+- Reports instructions that change $19/$1A/$1B while the expression is being handled.
+- Retains the useful V158 PRINT checkpoints but removes the very large general evaluator transfer trace.
+
+Suggested tests: PRINT 2, then PRINT 2+2.

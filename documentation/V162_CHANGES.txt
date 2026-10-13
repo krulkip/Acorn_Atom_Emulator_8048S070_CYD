@@ -1,0 +1,26 @@
+V162 - source-guided PRINT 2 numeric-path diagnostic
+
+Based directly on V161. No intended behavioural changes.
+
+Actual ATBASIC3 disassembly for a decimal literal:
+  $6DC0  evaluator level 1 gets next character
+  $6DFE  JSR $6069       ; decimal number scanner
+  $6069  scanner entry
+  $6087  INY / read next character
+  $609A  CMP #$3A        ; digit upper bound
+  $609E  SBC #$2F        ; convert ASCII digit
+  $60D6  STY $1B         ; finish scanner / update PtrB offset
+  $60DC  BEQ $610D       ; no exponent/decimal => integer
+  $610D  integer-result path
+  $6124  LDA #$40        ; integer type
+  $6126  SEC
+  $6127  RTS
+  $6E01  BCC error       ; should NOT branch for valid integer
+  $6E03  RTS             ; return from evaluator level 1
+
+V162 starts an instruction-by-instruction trace at $6DFE and follows the next
+140 actually executed instructions, including jumps outside those ranges.
+It also explicitly flags MOS $FFC4 JMP(BRKV) and BBC BREK entry $73F4.
+
+Purpose: prove the exact control-flow path taken by PRINT 2 and identify the
+first instruction where it diverges from the valid decimal-number path.

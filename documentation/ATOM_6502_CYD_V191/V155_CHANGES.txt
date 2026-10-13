@@ -1,0 +1,9 @@
+V155 clean BBC BASIC diagnostic
+
+- ASBK-S is not loaded and LL97 is never executed.
+- No zero-page snapshot/restoration.
+- No vector snapshot/restoration.
+- ATBASIC3 remains at $4000-$7FFF.
+- ATMMC3E and Atom Kernel remain unchanged.
+- Logs WRCVEC/RDCVEC/COMVEC at $FE94 and first BBC entry without changing them.
+- No 6522 changes.

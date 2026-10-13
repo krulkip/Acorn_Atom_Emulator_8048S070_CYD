@@ -1,0 +1,11 @@
+CYD V190 PORT7
+
+Based directly on PORT6.
+
+Fix: restored the exact CYD V110b Mode-0 renderer and atom_video_update() section from the known-good V110b source. This removes the ESP32-S3/8048S070 host geometry code, including the two-argument LovyanGFX setTextSize(x,y) call that TFT_eSPI does not support.
+
+The TFT object remains correctly typed as TFT_eSPI.
+
+PORT5 diagnostic HW-keyboard bypass remains in place until the replacement MCP23017 is available.
+
+No changes to ASBK-S V24, AtoMMC, A-ROM banking, FE71, SD, Atom ROMs, BBC BASIC path, or CPU core.

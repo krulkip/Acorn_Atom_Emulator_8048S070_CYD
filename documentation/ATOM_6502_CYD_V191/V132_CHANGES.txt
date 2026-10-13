@@ -1,0 +1,41 @@
+ACORN ATOM+ V132
+================
+
+Based on the accepted V131 ASBK-S V22 / AtoMMC COMVEC solution.
+
+V132 fixes host ~BREAK.
+
+Observed in V131:
+  [BREAK] Atom reset vector PC=$FF3F
+  [ASBK-S] WARNING: image signature missing at $1000
+
+and the screen returned to:
+  ACORN ATOM + ATOMMC2
+
+Cause:
+The real Kernel RESET clears/reuses the $1000 RAM workspace. ASBK-S V22 is
+resident there, so after ~BREAK it must be reloaded. The cold-start banner
+cleanup was also a one-shot task and therefore did not run after BREAK.
+
+V132 behaviour:
+1. ~BREAK performs the same 6502 reset as V131.
+2. Wait until RESET reaches $FE94 (OSRDCH).
+3. Reload /ASBK-S_v22.bin into $1000-$1660.
+4. Run LL97 automatically at $1005 as before.
+5. Re-run the ACORN ATOM+ banner scan after the reset banner has been drawn.
+
+No ASBK-S V22 binary/source change is made in V132.
+AtoMMC COMVEC remains $E0DE through the V22 compatibility table.
+
+Acceptance:
+  ~BREAK
+  -> no ASBK-S signature warning
+  -> screen says ACORN ATOM+
+  -> *CAT and *CWD still work
+  -> SHOW / SALFAA / PCBOX still work
+
+Compile correction
+------------------
+bitboard_6502.c is a C translation unit. V132 now explicitly declares
+atom_reload_asbk_s() and atom_scan_for_banner() before cpu_task(), and the
+reload helper uses uint8_t as its C-compatible return type.

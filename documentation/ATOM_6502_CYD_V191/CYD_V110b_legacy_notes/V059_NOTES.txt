@@ -1,0 +1,30 @@
+ATOM 6502 CYD V059
+=================
+
+Baseline
+--------
+Built directly from confirmed-working V058.
+
+Targeted change only
+--------------------
+Added 6847 bitmap Mode 4 rendering:
+  - VDG Port-A high nibble: $F0
+  - Logical resolution: 256 x 192
+  - VRAM: $8000-$97FF (6144 bytes)
+  - 32 bytes per row, bit 7 is leftmost pixel
+  - Each logical pixel maps 1 x 1 to the native 256 x 192 raster
+  - Native raster remains centred and integer-scaled for larger TFTs
+
+Deliberately unchanged
+----------------------
+Modes 0, 1, 2 and 3; keyboard; ESC/BREAK; CPU; VIA; F-ROM mapping fix;
+flyback/timing; TFT_eSPI board selection and setup.
+
+Suggested test
+--------------
+CLEAR 4
+PLOT 13,0,0
+PLOT 13,255,191
+PLOT 13,128,96
+MOVE 0,0
+DRAW 255,191

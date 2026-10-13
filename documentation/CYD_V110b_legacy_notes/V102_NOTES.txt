@@ -1,0 +1,43 @@
+ATOM 6502 CYD V102
+==================
+
+Baseline
+--------
+V102 is based on the proven V101c automatic direct-scan keyboard build.
+No keyboard, 6502, ROM, cassette, audio or 6847 behaviour is intentionally
+changed by this version.
+
+New feature: CYD screenshots
+----------------------------
+- The CYD BOOT button (GPIO0) is used as a screenshot button after startup.
+- A debounced HIGH->LOW press captures exactly the current 320x240 TFT image.
+- Screenshots are written as lossless 24-bit BMP files on the SD card:
+
+    /ATOM/SCREENSHOTS/ATOM0001.BMP
+    /ATOM/SCREENSHOTS/ATOM0002.BMP
+    ...
+
+- The first unused filename is selected automatically.
+- No status text is drawn on the CYD, so the captured image and the displayed
+  Atom screen remain clean.
+- Success/failure is reported only on Serial, for example:
+
+    [SCREENSHOT] Saved /ATOM/SCREENSHOTS/ATOM0003.BMP (320x240, 24-bit BMP)
+
+Implementation / watchdog
+-------------------------
+The screenshot is read back from the TFT using TFT_eSPI readRectRGB(), one
+scanline at a time. Only small line buffers are used. Each line is immediately
+converted from RGB to BMP BGR and written to SD.
+
+The routine explicitly calls yield() on every scanline. This gives the Arduino
+loop task / FreeRTOS watchdog a service opportunity throughout potentially slow
+TFT and SD I/O rather than blocking for an entire framebuffer-sized operation.
+
+The BMP uses normal bottom-up row order and standard 24-bit BI_RGB format.
+For the current landscape rotation the image is 320x240.
+
+BOOT button note
+----------------
+GPIO0 still retains its normal ESP32 bootloader meaning during reset. V102 only
+uses it as a screenshot input after the firmware is already running.

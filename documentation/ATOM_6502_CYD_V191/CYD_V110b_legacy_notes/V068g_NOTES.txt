@@ -1,0 +1,43 @@
+ATOM 6502 CYD V068g
+===================
+
+Critical heap-overrun fix to V068f.
+
+Cause
+-----
+The synthetic *CAT stream allocation omitted the dummy data byte.
+
+Allocated per entry:
+  4 '*' + filename + CR + 8 header + checksum
+
+Actually written per entry:
+  4 '*' + filename + CR + 8 header + dummy data + checksum
+
+Therefore V068f wrote exactly one byte beyond the allocated heap block for
+every .atm file. With HELLO and V066TEST that was a two-byte heap overwrite,
+which explains the ESP32 heap-poisoning "Bad tail" failure.
+
+Fix
+---
+- Add the missing dummy-data byte to the capacity calculation.
+- Add a per-entry bounds check before writing.
+- Serial now reports used/allocated catalogue bytes.
+
+No functional changes to:
+- ROM-native *CAT
+- automatic CTRL at end
+- deferred cassette restore
+- *MOUNT filename
+- V067a SAVE
+- V066 LOAD
+
+Expected with the current two files:
+[CAT] Virtual catalogue cassette: 2 files, 43/43 bytes used
+
+Then after the last file:
+[CAT] End reached - asserting automatic CTRL
+[CAT] End of SD catalogue - automatic CTRL released
+[CAT] Cassette restore deferred: ...
+[CAT] Restored mounted cassette ...
+
+No heap corruption or reset.

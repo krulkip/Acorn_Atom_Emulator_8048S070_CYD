@@ -1,0 +1,11 @@
+V153 - BBC BASIC targeted PRINT diagnostic
+
+Base: exact V152.
+Behaviour: unchanged from V152/V151.
+
+Added diagnostics only:
+- When BBC BASIC reaches L9456 ($9456), log PC, A, byte at zero-page $2A, and live WRCVEC.
+- After that path, if execution reaches the standard Atom WRCVEC target $FE52, log A and printable character.
+- Trace capped at 128 L9456 events.
+
+Purpose: determine whether BBC BASIC generates numeric output characters correctly and whether they reach the Atom output routine.

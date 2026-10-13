@@ -1,0 +1,20 @@
+ATOM 6502 CYD V102b
+
+Screenshot colour correction for JC2432W328 / ST7789 CYD.
+
+Observed on the actual board:
+- CYD display phosphor is green.
+- V102/V102a BMP captured the same phosphor as blue.
+
+V102b removes the V102a startup colour calibration completely.
+No test pixels are drawn and no calibration message is printed.
+
+The confirmed TFT readback byte order is treated as R,B,G.
+The BMP writer converts that explicitly to the BMP B,G,R byte order.
+
+All other V102 behaviour is unchanged:
+- BOOT button captures the 320x240 CYD display.
+- BMP files are saved under /ATOM/SCREENSHOTS/.
+- Screenshot status is Serial-only.
+- Capture is scanline based and yields every row for WDT safety.
+- V101c automatic direct game-key behaviour is unchanged.

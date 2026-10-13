@@ -1,0 +1,25 @@
+V120 - continuous absolute-cycle PC2 audio renderer
+
+Based on V118c.
+
+Why:
+V118c fixed isolated fire by inserting one extra sample whenever the event queue
+drained. That made fire audible, but queue-drain points are determined by ESP32
+task scheduling. Continuous tones such as the mothership could therefore acquire
+scheduler-dependent pulses/packet boundaries, heard as a repeating tik-tok.
+
+V120 changes the renderer generically:
+- each PC2 event stores its absolute 6502 cycle timestamp
+- the audio task maintains its own absolute 6502 render cursor
+- queued edges are rendered in cycle order
+- after queued edges are consumed, the renderer continues the CURRENT PC2 level
+  up to the current clockticks6502 value
+- there is no synthetic extra sample at queue-drain boundaries
+- there are no game-specific sound paths
+- 80 kHz sample rate and V118 high-pass model are retained
+
+Expected:
+- fire remains audible
+- alien destruction remains unchanged
+- mothership continuous flying sound loses scheduler-dependent tik-tok artifacts
+- generic Atom/BASIC/game PC2 sounds benefit from the same continuous timeline

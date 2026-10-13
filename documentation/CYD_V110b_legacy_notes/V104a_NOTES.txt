@@ -1,0 +1,35 @@
+ATOM 6502 CYD V104a - corrected Turbo SAVE
+
+V104 test result
+----------------
+The V104 $FC7C OSBPUT interception was rejected after hardware testing. It
+still spent seconds in the ROM path and captured an invalid 200-byte stream
+with checksum 00. $FC7C is therefore not used as a complete-byte Turbo SAVE
+interface.
+
+V104a design
+------------
+The genuine Atom OSSAVE vector target is $FAE5. Atomic Theory and Practice
+documents that X points to a 10-byte zero-page control block on entry:
+  X+0 filename pointer (CR terminated)
+  X+2 reload address
+  X+4 execution address
+  X+6 start address
+  X+8 end address + 1
+
+V104a intercepts only $FAE5. It reads those genuine Atom parameters, creates
+the 22-byte ATM header, writes the requested memory range directly to
+/ATOM/TAPES/<name>.atm, mounts the new ATM as the current virtual cassette,
+and substitutes RTS. The ROM cassette prompt, leader, 300-baud modulation,
+block framing and checksum stream are skipped entirely.
+
+If the filename is empty or the SD file cannot be opened, the hook returns
+false and the original ROM OSSAVE path is allowed to run as fallback.
+
+Expected Serial output
+----------------------
+[TAPE-SAVE] Turbo wrote /ATOM/TAPES/TEST.atm
+[TAPE-SAVE] Name="TEST" load=$.... exec=$.... start=$.... end=$.... length=...
+
+This is intentionally a high-level acceleration of the documented OSSAVE
+interface. No BASIC command or game-specific behavior is added.

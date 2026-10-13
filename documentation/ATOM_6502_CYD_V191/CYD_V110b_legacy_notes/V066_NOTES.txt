@@ -1,0 +1,87 @@
+ATOM 6502 CYD V066
+==================
+
+Purpose
+-------
+First real cassette LOAD implementation, backed by SD card .atm files.
+
+Baseline
+--------
+Built directly from confirmed-working V065.
+
+Important design rule
+---------------------
+V066 does NOT copy .atm payload bytes straight into Atom RAM.
+The .atm file is translated into genuine Atom cassette block bytes and then
+into a 1200/2400 Hz waveform on emulated 8255 Port-C bit 5. The original
+Kernel ROM OSBGET routine performs:
+- leader detection
+- start/data/stop-bit decoding
+- filename matching
+- block-number processing
+- loading into RAM
+- arithmetic checksum verification
+
+Port C additions
+----------------
+PC4 : free-running 2.4 kHz clock, derived from emulated 6502 cycles
+PC5 : virtual cassette waveform input
+PC2 : speaker, unchanged from V064
+PC3 : VDG CSS, unchanged from V062/V063
+
+SD cassette format
+------------------
+Place standard .atm files in:
+/ATOM/TAPES
+
+V066 mounts the first .atm file found in that directory as one virtual tape.
+
+ATM parser
+----------
+16 byte NUL-padded filename
+2 byte little-endian load address
+2 byte little-endian execution address
+2 byte little-endian data length
+data bytes
+
+Generated Atom tape
+-------------------
+Each block:
+- 2.1 s 2400 Hz leader
+- four '*' bytes
+- filename + CR
+- 8-byte Atom block header
+- 0.5 s 2400 Hz header/data gap
+- 1..256 data bytes
+- modulo-256 arithmetic checksum
+
+Bytes use 300-baud framing:
+start bit 0
+8 data bits LSB first
+stop bit 1
+0 -> 1200 Hz
+1 -> 2400 Hz
+
+Scope
+-----
+LOAD only. SAVE-to-SD is intentionally deferred until this receive path is
+proved on hardware.
+
+Test
+----
+Copy V066TEST.atm to /ATOM/TAPES and reboot.
+Serial should show:
+[TAPE] Mounted ATM: ...
+[TAPE] Name="V066TEST" load=$2800 exec=$2800 length=16 blocks=1
+
+At Atom prompt:
+*LOAD "V066TEST"
+
+The real ROM will print PLAY TAPE and wait for a key. Press RETURN once.
+Then, after loading completes:
+PRINT ?#2800
+PRINT ?#2804
+
+Expected:
+1
+85

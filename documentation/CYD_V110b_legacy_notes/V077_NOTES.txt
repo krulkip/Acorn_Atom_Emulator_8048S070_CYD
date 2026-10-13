@@ -1,0 +1,49 @@
+ATOM 6502 CYD V077
+===================
+
+Built directly from V076.
+
+Purpose
+-------
+Performance cleanup before profiling the CPU core.
+
+V076 measurements
+-----------------
+Idle at > settled around 0.775 MHz with the 1 MHz governor asking for full
+speed. This means the emulator itself, not the governor, is the bottleneck.
+
+Removed from hot paths
+----------------------
+1. The large once-per-second legacy diagnostic:
+     PC=$.... FE71=... B000W=... B001R=... B002R=...
+   This was useful during keyboard/8255 bring-up but is no longer needed.
+
+2. High-frequency increments of legacy diagnostic counters on:
+   - B000/B001/B002/B003 activity
+   - keyboard latch/row/active-return events
+   - old ROM/vector debug hits where present
+
+The associated state variables are intentionally left in place where harmless,
+to avoid changing interfaces or unrelated code.
+
+Retained
+--------
+- V076 1 MHz cycle governor unchanged
+- once-per-second [CPU] MHz diagnostic
+- ~BREAK
+- fast <1-second LOAD
+- working *CAT with prompt
+- GAMEKEYS
+- P-Charme
+- video/audio behavior
+
+Test
+----
+First leave the Atom idle at '>' for 5-10 seconds and send the [CPU] lines.
+Then, if useful, test:
+  10 GOTO 10
+and INVADERSZX.
+
+If V077 reaches or exceeds 1 MHz raw speed, the V076 governor will hold it near
+1.000 MHz automatically. If it remains below 1 MHz, the next target is the hot
+read6502/write6502/step6502 path rather than further governor tuning.

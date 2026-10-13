@@ -1,0 +1,72 @@
+V062 - Atom MC6847 CSS alternate colour-set support
+===================================================
+
+Baseline
+--------
+Built directly from the user-confirmed working V061 project.
+
+Change made
+-----------
+Adds only the real Atom CSS colour-set selection to the already working
+64x64 four-colour mode ($B000 high nibble $10).
+
+The Atom's 8255 Port C is at $B002.  Port-C bit 3 ($08) is connected to
+the MC6847 CSS input, so software can switch the colour set without changing
+the bitmap data or the graphics mode.
+
+Palette mapping
+---------------
+CSS=0 (V061 behaviour, unchanged):
+  00 green
+  01 yellow
+  10 blue
+  11 red
+
+CSS=1 (new in V062):
+  00 buff
+  01 cyan
+  10 magenta
+  11 orange
+
+The renderer watches $B002 bit 3 and forces a complete colour-bitmap redraw
+when CSS changes, because VRAM itself does not change during a palette switch.
+
+Deliberately unchanged
+----------------------
+- Mode 0 text + monochrome semigraphics from V060
+- Monochrome Modes 1-4 from V059
+- V061 64x64 2-bpp memory layout and scaling
+- BASIC / Floating Point ROM behaviour
+- F-ROM mapping fix
+- keyboard / ESC / DEL / arrows
+- flyback timing
+- TFT_eSPI board-selection setup
+- 8255 Port-C read/write implementation
+
+Suggested test
+--------------
+First draw the V061 colour-set-0 points:
+
+  CLEAR 1
+  COLOUR 1
+  PLOT 13,10,10
+  COLOUR 2
+  PLOT 13,20,20
+  COLOUR 3
+  PLOT 13,30,30
+
+Then switch CSS without changing VRAM:
+
+  ?#B002=8
+
+The complete picture should immediately change from the CSS=0 palette
+(green/yellow/blue/red) to CSS=1 (buff/cyan/magenta/orange).
+
+Return to CSS=0 with:
+
+  ?#B002=0
+
+Note: the historical Atom idiom ?#B002=?#B002:8 also sets CSS, but the
+current emulator synthesizes the input half of Port C on reads.  Direct
+writes above are therefore the cleanest V062 renderer test and avoid mixing
+CSS validation with any future refinement of 8255 Port-C readback.

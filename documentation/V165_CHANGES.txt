@@ -1,0 +1,14 @@
+V165 - BBC BASIC V164 + proven V141 physical MCP23017 keyboard
+
+Base: V164 known-good BBC BASIC milestone.
+
+Changes only:
+- Restores atom_hw_kbd.cpp/.h from proven V141.
+- Restores MCP23017 background scanner on GPIO19/20, core 0, priority 1.
+- Restores physical 10x6 matrix merge into Atom 8255 Port B.
+- Restores physical BREAK via atom_request_break().
+- Restores physical REPT on 8255 Port C bit 6.
+- Keeps the V164 BBC BASIC $6000-$60FF fake-6522 bypass unchanged.
+- LINK #4000 remains the BBC BASIC entry method.
+
+First tests: Atom keyboard, LINK #4000, BBC keyboard input, PRINT 2+2, BREAK, REPT, *CAT, LOAD/SAVE.

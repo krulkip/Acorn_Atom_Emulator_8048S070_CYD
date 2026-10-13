@@ -1,0 +1,23 @@
+ATOM 6502 CYD V051
+==================
+Baseline: V050 (known-good real Atom keyboard/8255 + ESC + cycle-timed flyback).
+
+Targeted changes only:
+1. Removed the old host-side '!' VRAM debug trap. '!' now reaches the proven Atom keyboard matrix mapping.
+2. Removed the old host-side '~' VRAM debug trap. No Atom behavior is assigned to '~'.
+3. Corrected the CYD text renderer for Atom/6847 alphanumeric screen codes:
+     $00  @
+     $01-$1A  A-Z
+     $1B  [
+     $1C  \\
+     $1D  ]
+     $1E  native up-arrow glyph (drawn directly on the TFT)
+     $1F  _
+     $20  space
+4. No keyboard matrix, ESC, flyback, BASIC, CPU, VIA, ROM, or timing behavior changed.
+
+Suggested test in Tera Term:
+  !@[\\]^
+
+Expected:
+  ! @ [ \\ ] and an actual up-arrow glyph all appear on the CYD.

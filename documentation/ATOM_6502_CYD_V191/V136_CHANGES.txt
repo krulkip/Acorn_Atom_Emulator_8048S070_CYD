@@ -1,0 +1,22 @@
+V136
+====
+
+Baseline: exact V132 compile-fixed project.
+
+Only functional change:
+- ASBK-S V24 replaces V22.
+- V24 is V22 plus the static ATMMC3E LODVEC/SAVVEC/file vectors.
+- V23 live-vector capture is not used.
+
+No change to atommc_stub.cpp or filename handling.
+
+IMPORTANT: ASBK-S_v24.bin is a new SPIFFS file, so upload the data filesystem
+as well as the V136 sketch.
+
+Test in this order:
+1. *CAT
+2. *CAT Games05
+3. *CWD Games05
+4. *CAT
+5. Verify Axxx cycling with SALFAA SHOW and PCBOX commands.
+6. Only then: *RUN INVADERSZX

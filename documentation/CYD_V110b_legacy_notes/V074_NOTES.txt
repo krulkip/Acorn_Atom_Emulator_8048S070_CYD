@@ -1,0 +1,62 @@
+ATOM 6502 CYD V074
+===================
+
+Baseline
+--------
+Built directly from the confirmed-working V073d:
+- fast SD-backed LOAD (<1 second)
+- working ROM-native *CAT with prompt return
+- GAMEKEYS ON/OFF
+- P-Charme $A000 support
+- versioned 2.5 s boot screen
+
+New: host ~BREAK
+----------------
+Type at any time in OpenTerm:
+
+  ~BREAK
+
+Case-insensitive input is accepted by the existing lower->upper terminal
+normalization. No Return is required; BREAK is requested as soon as the K is
+received. If the terminal appends CR, V074 consumes it.
+
+~BREAK is a host escape and is NEVER passed into the Atom keyboard.
+
+Implementation
+--------------
+The Arduino/Serial loop only sets a request flag. The CPU task performs the
+actual reset safely BETWEEN 6502 instructions:
+
+1. Pause emulated CPU.
+2. Flush pending keyboard input and disable GAMEKEYS.
+3. Abort transient virtual tape / *CAT state and rewind the currently mounted
+   cassette (the mounted file itself is retained).
+4. Call reset6502(), which takes PC from the genuine Atom RESET vector.
+5. Set normal processor status and resume the CPU.
+6. The genuine Atom Kernel reset code performs normal machine initialization.
+
+This does NOT:
+- reboot ESP32
+- remount SPIFFS
+- remount SD
+- unload BASIC / FP / Kernel / P-Charme ROMs
+- forget the currently mounted ATM cassette
+
+Expected while running a game
+-----------------------------
+Type:
+
+  ~BREAK
+
+Serial:
+  [BREAK] ~BREAK received - requesting Atom reset
+  [BREAK] Transient keyboard/tape state cleared
+  [BREAK] Atom reset vector PC=$FF3F
+
+TFT then returns via the genuine Atom reset sequence to text mode:
+
+  ACORN ATOM
+
+  >
+
+GAMEKEYS is deliberately OFF after BREAK so normal BASIC typing works.

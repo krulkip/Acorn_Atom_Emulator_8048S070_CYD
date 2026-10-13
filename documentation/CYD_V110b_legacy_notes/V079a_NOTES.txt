@@ -1,0 +1,29 @@
+ATOM 6502 CYD V079a
+====================
+
+Built directly from V079.
+
+Observed
+--------
+V079 CPU speed is ~0.972 MHz idle, but typing GAMEKEYS ON while running
+Invaders could be passed to the Atom, producing error 94 + BEL.
+
+Cause
+-----
+The host GAMEKEYS parser still required:
+  gamekeysHostLineStart == true
+
+That state can legitimately be false after LOAD/RUN/game input even though
+GAMEKEYS is meant to be an emulator host command.
+
+Fix
+---
+GAMEKEYS ON/OFF may now begin at any time.
+
+The parser starts buffering only when it sees G/g. If subsequent characters
+do not match a GAMEKEYS command, the held bytes are replayed through the
+normal Atom keyboard path, so normal Atom typing is preserved.
+
+~BREAK behavior is unchanged.
+
+All V079 performance optimizations and the 1 MHz governor are unchanged.

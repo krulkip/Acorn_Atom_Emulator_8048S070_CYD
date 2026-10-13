@@ -1,0 +1,35 @@
+CYD V190 PORT10 0x22 SMALL - FIXED
+=====================================
+
+Base: exact working CYD V190 PORT9 supplied by user.
+
+Purpose:
+- PC/serial remains the normal Atom keyboard.
+- MCP23017 at 0x22 is ONLY the small five-key auxiliary keyboard.
+
+CYD I2C:
+- SDA GPIO21
+- SCL GPIO22
+- software I2C retained from PORT9
+
+Small keyboard:
+- MCP GPB5 = CTRL -> GND
+- MCP GPB6 = SHIFT -> GND
+- MCP GPB7 = REPT -> GND
+- MCP GPA5 = BREAK -> GND
+- AUX1 = ROW1/COL7 = J1 pin14 / J1 pin3 = GPA1 / GPB7
+
+Important implementation:
+- atom_hw_kbd_get_port_b() returns matrix bits 0..5 released/high.
+  It merges only physical CTRL/SHIFT, so it cannot mask PC/serial normal keys.
+- REPT feeds existing Atom PC6 path.
+- BREAK feeds existing PORT9 BREAK task.
+- SHIFT+BREAK therefore retains the existing BBC BASIC path.
+- AUX1 is distinguished from REPT by sampling PB7 with ROW1 HIGH first,
+  then driving ROW1 LOW and sampling PB7 again.
+- AUX1 rising press event sets existing atomScreenshotRequested.
+- Existing GPIO0 and ~SHOT screenshot triggers are unchanged.
+- Physical FE71 recent-key latch is intentionally empty because this board
+  has no ordinary physical matrix keys. PC/serial FE71 path is untouched.
+
+This version replaces the earlier incorrect PORT10 attempts.

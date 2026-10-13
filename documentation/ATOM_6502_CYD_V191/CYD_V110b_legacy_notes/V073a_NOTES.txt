@@ -1,0 +1,17 @@
+ATOM 6502 CYD V073a
+====================
+
+Compile-only correction to V073.
+
+V073 added fast cassette hooks in fakemem.c that access:
+  *fake6502_a
+  *fake6502_status
+
+Those register pointers already exist in the CPU core, but fakemem.c did not
+declare them as extern symbols.
+
+V073a adds:
+  extern uint8_t *fake6502_a;
+  extern uint8_t *fake6502_status;
+
+No cassette, CPU, keyboard, video, sound or GAMEKEYS behaviour is changed.

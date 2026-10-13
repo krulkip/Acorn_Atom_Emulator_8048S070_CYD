@@ -1,0 +1,20 @@
+V044 - corrected real 8255 keyboard matrix timing
+
+Baseline:
+- Built from V042, not V043 diagnostic.
+- Same genuine Atom OSRDCH vector ($FE94).
+- Same ASCII-to-Atom matrix mapping.
+- Same 8255 B000/B001/B002 behavior.
+- Same V038 synthetic startup RETURN.
+
+Single logical correction:
+V042 released an emulated key after two reads of its selected ROW. But FE71
+visits the selected row once for each of six column masks. Keys in columns
+0..4 could therefore be released before their column was tested; column 5 is
+tested first and could work (explaining the observed lone 'T').
+
+V044 keeps the key asserted through the row scans and counts a detection only
+when the 6502 accumulator's current FE71 BIT mask actually tests the key's
+column. Two real detections are required: acquire scan and verification scan.
+
+No other emulation behavior was deliberately changed.

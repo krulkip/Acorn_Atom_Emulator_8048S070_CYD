@@ -1,0 +1,72 @@
+ATOM 6502 CYD V104
+==================
+
+Baseline
+--------
+Built from the confirmed-working V102b/V103 baseline, including the corrected
+ST7789 BMP screenshot colour mapping and quiet tft_setup pragma switch.
+
+Purpose
+-------
+Add Turbo SAVE using the same design principle as V073 Turbo LOAD.
+
+V073 Turbo LOAD
+---------------
+The genuine Atom ROM remains responsible for filename matching, cassette block
+headers, block sequencing, address handling and checksum verification. Only the
+slow physical cassette byte reconstruction is bypassed by supplying decoded bytes
+at OSBGET ($FBEE).
+
+V104 Turbo SAVE
+---------------
+The genuine Atom cassette OSBPUT routine is at $FC7C (the Kernel BPTVEC target).
+During an active OSSAVE only, V104 intercepts the opcode fetch at $FC7C, passes
+the accumulator byte directly into the existing V067 cassette-byte/block parser,
+and substitutes RTS.
+
+The ROM still constructs and sends the genuine cassette byte stream:
+- four '*' preamble
+- filename + CR
+- 8-byte block header
+- data bytes
+- ROM-generated checksum
+- multi-block sequencing
+
+Only the 300-baud physical modulation performed by OSBPUT is skipped. The V067
+Port-C bit decoder remains in the source as a fallback/reference implementation.
+
+Turbo governor
+--------------
+While Turbo SAVE is active the 1 MHz wall-clock governor is temporarily bypassed,
+just as for Turbo LOAD. This also accelerates the ROM's leader/gap delay loops.
+The CPU task still yields periodically for FreeRTOS/ESP32 watchdog health. Turbo
+is disabled as soon as the final cassette block checksum byte is received.
+
+Saved format/location
+---------------------
+Unchanged:
+  /ATOM/TAPES/<Atom filename>.atm
+
+The same proven V067 parser validates the ROM-created blocks and converts them
+to a standard 22-byte-header ATM file. The freshly saved ATM is remounted as the
+current virtual cassette exactly as before.
+
+User-visible operation
+----------------------
+Unchanged Atom commands. For example:
+  SAVE "TEST"
+
+No new command, ROM patch, BASIC special case or game-specific behavior is added.
+
+Acceptance test
+---------------
+1. Enter a small BASIC or assembler program.
+2. SAVE "TEST" and press RETURN when the genuine ROM requests RECORD TAPE.
+3. SAVE should now complete in roughly the same class of wall-clock time as Turbo
+   LOAD rather than at 300-baud cassette speed.
+4. Serial should show:
+     [TAPE-SAVE] OSSAVE started; Turbo SAVE direct OSBPUT active
+     [TAPE-TURBO] ON
+     ... final block / write messages ...
+     [TAPE-TURBO] OFF
+5. Alter/NEW the program and LOAD "TEST" to verify the saved ATM round-trip.

@@ -1,0 +1,59 @@
+ATOM 6502 CYD V078
+===================
+
+Built directly from V077.
+
+Purpose
+-------
+Optimize the hottest memory-emulation path without changing emulated Atom
+behavior or the V076 1 MHz governor.
+
+V077 result
+-----------
+Removing the old Serial/counter diagnostics did not change the ceiling:
+  idle ~0.775 MHz
+
+V078 change
+-----------
+read6502() previously updated legacy generic debug bookkeeping on EVERY memory
+read:
+  fakemem_access_mode
+  fakemem_access_address
+  fakemem_access_data
+  last_read_addr
+  last_read_value
+
+A 6502 performs memory reads constantly, so these stores were in the hottest
+possible path. V078 removes that generic bookkeeping from CPU reads.
+
+Equivalent generic bookkeeping stores around VIA/8255 writes are also removed.
+Functional device state is NOT removed:
+- fakemem RAM/ROM
+- 8255 keyboard behavior
+- B002 VBL/cassette/REPT
+- speaker/BSR
+- tape
+- VIA
+- serial hooks
+all remain.
+
+This is deliberately conservative: no address mapping or device semantics are
+changed yet.
+
+Retained
+--------
+- V076 1 MHz cycle governor
+- [CPU] MHz diagnostic
+- ~BREAK
+- fast cassette LOAD
+- *CAT
+- GAMEKEYS
+- P-Charme
+- audio/video
+
+Test first
+----------
+Leave idle at > for 5-10 seconds and send [CPU] lines.
+
+If still below 1 MHz, the next optimization should be structural address
+dispatch / CPU-core call overhead rather than changing timing.

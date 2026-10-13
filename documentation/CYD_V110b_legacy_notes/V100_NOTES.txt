@@ -1,0 +1,18 @@
+ATOM 6502 CYD V100
+====================
+
+Built directly from the tested V096 generic-audio baseline.
+
+V100 fix:
+- Atom BASIC RND state is $0008-$000C.
+- Clearing all RAM made this state 00 00 00 00 00.
+- The Atom BASIC random generator cannot escape the all-zero state.
+- Cold start now initializes $0008-$000C to a non-zero power-up seed:
+  78 56 34 12 90.
+- No RND interception or game-specific death-sound code is added.
+- V096 generic PC2/audio behavior is otherwise unchanged.
+
+Tests:
+1. At the Atom prompt, PRINT RND several times: values should vary.
+2. Run INVADERSZX normally and verify cannon death sound.
+3. Confirm fire, alien destroy and mothership sounds remain as in V096.

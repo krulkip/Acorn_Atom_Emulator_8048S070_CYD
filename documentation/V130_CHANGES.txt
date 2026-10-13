@@ -1,0 +1,7 @@
+V130 - based directly on proven V127
+
+Only functional changes:
+1. Bank 1 now loads /ASBK-I_v1.03.rom (4096 bytes), using the previously tested v1.03 ROM.
+2. The Atom boot-screen banner is shortened from "ACORN ATOM + ATOMMC2" to "ACORN ATOM+".
+
+All V127 resident ASBK-S loading and automatic $1005 initialization are unchanged.

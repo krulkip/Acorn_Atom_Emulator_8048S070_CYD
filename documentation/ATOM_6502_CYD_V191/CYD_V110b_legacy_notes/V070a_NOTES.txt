@@ -1,0 +1,27 @@
+ATOM 6502 CYD V070a
+====================
+
+Fix only for V070 GAMEKEYS host command parsing.
+
+V070 required exact uppercase:
+  GAMEKEYS ON
+  GAMEKEYS OFF
+
+Typing lowercase such as:
+  gamekeys on
+was passed to the Atom and therefore produced BASIC error 94 and the normal
+Atom error bell.
+
+V070a:
+- GAMEKEYS commands are case-insensitive
+- accepts CR, LF, or CR+LF terminal line endings
+- consumes the host command before it reaches the Atom
+
+Examples all accepted:
+  GAMEKEYS ON
+  gamekeys on
+  GameKeys On
+  GAMEKEYS OFF
+  gamekeys off
+
+All keyboard-matrix behaviour is otherwise unchanged from V070.

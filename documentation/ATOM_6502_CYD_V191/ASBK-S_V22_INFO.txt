@@ -1,0 +1,17 @@
+ASBK-S V22
+============
+
+Load address : $1000
+Length       : 1633 bytes
+Atom checksum: 057E
+
+V22 differs from V21 only in the saved COMVEC bytes in the vector table:
+
+CPU address  V21  V22
+$14F3        EF   DE
+$14F4        F8   E0
+
+Thus LL97 restores COMVEC $E0DE for AtoMMC v3.02 instead of the original
+Kernel COMVEC $F8EF.
+
+All assembled code addresses remain unchanged.

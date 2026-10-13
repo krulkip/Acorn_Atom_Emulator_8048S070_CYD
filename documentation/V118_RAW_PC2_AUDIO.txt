@@ -1,0 +1,15 @@
+V120c raw-PC2 audio test
+
+Based on stable V117 AtoMMC/filesystem/ROM-bank code.
+
+Audio change only:
+- removes the synthetic kick + 8-step exponential decay
+- removes all per-PC2-edge delayMicroseconds() calls
+- timestamps genuine PC2 transitions in 6502 cycles
+- reconstructs the original 0/1 waveform at 40 kHz I2S
+- applies only a one-pole 63/64 AC-coupling high-pass filter
+
+Purpose:
+Preserve the distinct original Invaders waveforms (lower alien, upper alien,
+mothership, fire, march and cannon/player-death) instead of making every edge
+trigger the same synthetic transient.

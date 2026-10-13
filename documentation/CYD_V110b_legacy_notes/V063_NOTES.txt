@@ -1,0 +1,57 @@
+ATOM_6502_CYD_OK_V063
+======================
+
+Baseline
+--------
+Built directly from the user-confirmed V062 baseline.
+
+Scope
+-----
+V063 completes only the genuine Acorn Atom four-colour graphics modes
+implemented by the installed D000 Floating Point ROM COLOUR command.
+No generic/unused MC6847 modes are added.
+
+Existing V062 colour Mode 1a ($10, 64x64) and CSS handling are preserved.
+Added renderer support for:
+
+  Mode 2a  $B000 high nibble $50  128x64   4 colours  $8000-$87FF
+  Mode 3a  $B000 high nibble $90  128x96   4 colours  $8000-$8BFF
+  Mode 4a  $B000 high nibble $D0  128x192  4 colours  $8000-$97FF
+
+All colour modes use four 2-bit pixels per byte, ordered bits 7:6, 5:4,
+3:2, 1:0.  CSS=0 and CSS=1 palettes are exactly the V062 palettes.
+
+Monochrome Modes 0-4, keyboard, CPU, F-ROM mapping, 8255 behaviour,
+flyback timing and TFT setup are deliberately unchanged.
+
+Suggested tests
+---------------
+Mode 2a:
+  CLEAR 2
+  COLOUR 1
+  PLOT 13,10,10
+  COLOUR 2
+  PLOT 13,60,30
+  COLOUR 3
+  PLOT 13,120,60
+
+Mode 3a:
+  CLEAR 3
+  COLOUR 1
+  PLOT 13,10,10
+  COLOUR 2
+  PLOT 13,64,48
+  COLOUR 3
+  PLOT 13,120,90
+
+Mode 4a:
+  CLEAR 4
+  COLOUR 1
+  PLOT 13,10,10
+  COLOUR 2
+  PLOT 13,64,96
+  COLOUR 3
+  PLOT 13,120,180
+
+For each mode, ?#B002=8 should switch the already-drawn picture to the
+alternate Atom/MC6847 colour set without changing VRAM; ?#B002=0 restores it.

@@ -1,0 +1,13 @@
+V161 - BBC BASIC primary text-pointer diagnostic
+
+Based directly on V159. No emulation behaviour changes.
+
+Disassembly of actual ATBASIC3 proves $5B0B-$5B15 executes:
+  LDA $0B / STA $19
+  LDA $0C / STA $1A
+  LDA $0A / STA $1B
+so it is correctly copying BBC BASIC primary LINE/CURSOR into secondary AELINE/AECUR.
+
+V161 adds exact tracing of every write to primary $0A-$0C during the expression, with PC and SP. Existing V159 traces remain.
+
+Test: PRINT 2 is sufficient.

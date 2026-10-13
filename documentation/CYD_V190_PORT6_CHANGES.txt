@@ -1,0 +1,17 @@
+CYD V190 PORT6
+================
+
+Based directly on PORT5.
+
+Fixes the decoded PORT5 LoadProhibited crash.  PORT5 display_api.h incorrectly
+declared the global tft object as a LovyanGFX LGFX_Device reference even though
+the CYD main sketch defines it as TFT_eSPI.  The linker accepted the same symbol
+name, but fakemem_atom.cpp then called LovyanGFX methods on a TFT_eSPI object,
+causing the crash in atom_video_update()/fillScreen.
+
+PORT6 changes display_api.h to include TFT_eSPI.h and declare:
+    extern TFT_eSPI tft;
+
+No Atom emulation, ASBK-S, AtoMMC, A-ROM banking, FE71, SD, ROM, or video-renderer
+logic is changed.  The PORT5 hardware-keyboard bypass remains for this diagnostic
+build until the replacement MCP23017 is available.

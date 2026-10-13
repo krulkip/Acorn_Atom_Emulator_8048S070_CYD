@@ -1,0 +1,16 @@
+V163 - BBC BASIC $6000 page / fake-6522 collision fix
+
+Based directly on V162.
+
+Only intended behavioural change:
+- When the CPU is executing ATBASIC3 in $4000-$7FFF, reads/writes to
+  $6000-$60FF use normal fakemem instead of the emulated 6522 VIA.
+- Outside BBC BASIC execution, the existing Atom fake-6522 mapping at
+  $6000-$60FF is unchanged.
+
+Reason:
+V162 proved PRINT 2 reaches $6069, whose ATBASIC3 opcode is A2 (LDX #0),
+but read6502() returned the fake-6522 register value 00, causing BRK and
+entry through $FFC4 to BBC BRKV $73F4.
+
+All V162 diagnostics are retained and relabelled V163 for this test.

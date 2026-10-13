@@ -1,0 +1,60 @@
+ATOM 6502 CYD V109a - *CAT STACK FIX
+===================================
+
+Baseline
+--------
+V109.
+
+Problem found
+-------------
+Executing *CAT immediately triggered:
+
+  Guru Meditation Error
+  Stack canary watchpoint triggered (cpu_task)
+
+The cpu_task stack is 4096 bytes.
+
+Cause
+-----
+V109's atomCatBuildVirtualTape() declared:
+
+  CatItem items[96];
+
+as a local variable.  Each CatItem contains an Arduino String plus several
+fields.  Together with local SD File/String sorting objects, that catalogue
+table consumed too much of the 4 KB cpu_task stack.
+
+Fix
+---
+The catalogue scratch table is now static/global:
+
+  static AtomCatItem atomCatItems[96];
+
+atomCatBuildVirtualTape() uses that table rather than placing it on the task
+stack.
+
+The cpu_task stack remains 4096 bytes.  It is intentionally NOT enlarged just
+to hide the allocation bug.
+
+No other V109 functionality is intentionally changed:
+  - generic direct-scan keyboard
+  - Frogger T/B/F/H support
+  - *CAT directory navigation
+  - current-directory LOAD/SAVE/*MOUNT
+  - oswrch_hits cleanup
+  - V108 low-overhead [CPU] diagnostic
+
+First test
+----------
+At a fresh Atom prompt:
+
+  *CAT
+
+It must catalogue without an ESP32 reset.
+
+Then test:
+  *CAT GAMES1
+  *CAT ..
+  LOAD "..."
+  original FROGGER T/B/F/H
+  ~BREAK

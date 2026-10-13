@@ -1,0 +1,19 @@
+ATOM 6502 CYD V110b
+====================
+
+Baseline: V110a.
+
+Only functional change:
+- External FE71 discrete-key input is latched immediately when PC reaches
+  $FE71, before the ROM's first matrix read.
+- External FE71 completion remains at $FE93 and still consumes exactly one
+  FIFO character.
+
+Unchanged:
+- Raw B000/B001 V101c path used by InvadersZX.
+- Normal OSRDCH FIFO typing.
+- *CAT directories.
+- LOAD/SAVE/tape.
+- video/colour/screenshots/audio.
+- low-overhead CPU diagnostic.
+- ~BREAK / ESC.

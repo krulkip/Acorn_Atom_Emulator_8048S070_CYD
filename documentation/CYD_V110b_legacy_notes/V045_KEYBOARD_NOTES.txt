@@ -1,0 +1,32 @@
+ATOM 6502 CYD V045
+===================
+
+Baseline
+--------
+Built from V044. The V044 real-matrix keyboard logic is unchanged.
+
+Single logical change
+---------------------
+$B002 VBL/flyback generation is no longer based on the count of B002 reads.
+V045 generates a 60 Hz time-based VBL signal using esp_timer_get_time():
+- frame period: 16667 us
+- VBL active-low interval: 2048 us
+- B002 bit 6 (REPT) remains high when not pressed
+
+Reason
+------
+With the genuine ROM OSRDCH restored, every keypress calls FB8A, which waits
+for six CRT flybacks. V038's read-count synthetic flyback was never designed
+for that path and resulted in extremely long polling loops and watchdog reset.
+
+Deliberately unchanged
+----------------------
+- V044 ASCII-to-matrix table
+- V044 row/column hold/release logic
+- genuine OSRDCH vector at FE94
+- 8255 B000/B001 keyboard behavior
+- boot RETURN injection
+- CPU core
+- BASIC ROMs
+- VIA implementation
+- CYD text rendering

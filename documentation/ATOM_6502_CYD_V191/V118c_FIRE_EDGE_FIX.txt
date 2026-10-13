@@ -1,0 +1,24 @@
+V120 - missing fire edge diagnostic/fix
+
+Based on V120 (80 kHz raw-PC2 renderer).
+
+Finding:
+V120/V120 reproduce the duration BEFORE each PC2 edge. For a burst this is
+fine because the next edge causes the new PC2 level to be sampled. A lone final
+edge has no following event, so its new state may never reach I2S at all.
+INVADERSZX fire can therefore be silent.
+
+Change:
+After draining one batch of PC2 events, emit exactly ONE 80 kHz sample at the
+final new PC2 level before flushing the I2S block.
+
+No changes to:
+- 80 kHz sample rate
+- PC2 cycle timestamps
+- high-pass coefficients
+- alien/mothership/turret destruction timing
+- AtoMMC, filesystem, ROM banking, keyboard
+
+Expected:
+- fire should become audible
+- alien destruction should remain essentially unchanged

@@ -1,0 +1,13 @@
+ATOM 6502 CYD V075a
+====================
+
+Compile-only correction to V075.
+
+V075 reads clockticks6502 from bitboard_6502.c for the CPU speed diagnostic,
+but that global is defined in fake6502.c and was not declared in this
+translation unit.
+
+V075a adds:
+  extern uint32_t clockticks6502;
+
+No timing or emulator behavior has been changed.

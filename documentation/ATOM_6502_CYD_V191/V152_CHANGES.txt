@@ -1,0 +1,15 @@
+V152 BBC BASIC / ASBK vector diagnostic
+
+Based directly on V151.
+
+Behaviour is intentionally unchanged from V151:
+- ATBASIC3 remains at $4000-$7FFF.
+- On first BBC entry WRCVEC is restored to $FE52 and RDCVEC to $FE94.
+- COMVEC and all filing vectors remain untouched.
+
+New diagnostic only:
+- Before restoring the character vectors, prints all live vectors $0200-$021B.
+- Prints ASBK workspace/saved-vector area $9F00-$9F1B.
+- Highlights live WRCVEC/RDCVEC/COMVEC and $9F08/$9F0A.
+
+No 6522, AtoMMC, ASBK init, keyboard, SD, audio, or memory-map changes.

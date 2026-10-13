@@ -1,0 +1,13 @@
+V116 #A000 ROM banking
+=======================
+
+?#BFFF=0  P-Charme
+?#BFFF=1  ASBK-I v1.00
+?#BFFF=2  DISATOM
+?#BFFF=3  SALFAA 2.6
+?#BFFF=4  GAGS 2.3
+?#BFFF=5  PC*BOX v1.02
+?#BFFF=6  TOOLBUG
+?#BFFF=7  AXR-1
+
+All eight raw 4096-byte ROMs are loaded automatically from SPIFFS.

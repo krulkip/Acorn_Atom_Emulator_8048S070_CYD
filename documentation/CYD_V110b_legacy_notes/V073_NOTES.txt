@@ -1,0 +1,61 @@
+ATOM 6502 CYD V073
+===================
+
+Baseline
+--------
+Built directly from V072. V070a GAMEKEYS and V071 boot-screen changes remain.
+
+Purpose
+-------
+Make SD-backed virtual cassette LOAD/CAT genuinely fast while preserving the
+Atom ROM's meaningful cassette/file logic.
+
+V072 result
+-----------
+INVADERSZX still took about 2m21s. Reducing host CPU throttling did not help
+because the genuine OSBGET routine was still reconstructing every byte by
+measuring 1200/2400-Hz pulse timing.
+
+V073 fast path
+--------------
+The Atom Kernel entry $FBEE is OSBGET. Its contract is:
+- return one cassette byte in A
+- add that byte to checksum $DC
+- preserve X, Y and processor flags
+
+For an SD virtual cassette, V073 supplies the next decoded byte at $FBEE,
+updates $DC exactly as OSBGET does, and substitutes RTS.
+
+Everything above OSBGET remains genuine ROM code:
+- four-'*' preamble check
+- filename read and compare
+- cassette header parsing
+- block/load-address handling
+- checksum comparison
+- LOAD / *LOAD / BASIC control flow
+- ROM-native *CAT
+
+Leader acceleration
+-------------------
+The genuine $FB8E header routine supports pressing SHIFT to skip the 2-second
+leader search. During an SD virtual tape only, V073 makes the existing branch
+at $FBA0 take that documented ROM path. No ROM bytes are patched.
+
+The physical FSK waveform code remains in the sketch as reference/fallback.
+
+Expected Serial
+---------------
+After RETURN at PLAY TAPE:
+  [TAPE-FAST] Direct ROM OSBGET byte delivery active
+
+For a multi-block file such as INVADERSZX, loading should now be measured in
+seconds rather than minutes.
+
+Unchanged
+---------
+- ATM file format
+- SAVE output/capture path
+- GAMEKEYS ON/OFF
+- P-Charme
+- video/sound
+- normal CPU timing

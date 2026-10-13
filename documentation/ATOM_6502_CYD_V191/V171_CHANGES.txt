@@ -1,0 +1,25 @@
+V171 - SHIFT+BREAK LINK #4000 at genuine Atom command-input point
+==================================================================
+Baseline: V170.
+
+Only the SHIFT+BREAK BBC launch timing is changed.
+
+- Ordinary BREAK is unchanged.
+- Host ~BREAK is unchanged.
+- ASBK remains completely bypassed, as in the current BBC test baseline.
+- SHIFT+BREAK still waits for both physical keys to be released and then uses
+  the proven normal atom_request_break() path.
+- V170's screen '>' prompt/count test is no longer used to trigger BBC entry.
+- The CPU task already detects PC=$FE94, the Kernel's first OSRDCH after reset.
+  V171 uses that exact known-good Atom-ready point to arm the BBC command.
+- Arduino loop then queues exactly "LINK #4000" + CR through the existing
+  deliverAtomSerialByte()/Atom ASCII FIFO path.
+- No direct jump to $4000 and no BBC/ASBK/vector/6522 changes.
+
+Expected SHIFT+BREAK diagnostic sequence:
+  [BREAK] Physical SHIFT+BREAK - waiting for key release
+  [BREAK] SHIFT+BREAK released - requesting normal Atom reset
+  [BREAK] Atom reset vector PC=$FF3F
+  [V157] ASBK bypassed at PC=$FE94; no state changed
+  [BREAK] Post-reset Atom OSRDCH reached at $FE94 - BBC command enabled
+  [BREAK] Atom ready at OSRDCH - queueing LINK #4000

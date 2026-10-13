@@ -1,0 +1,81 @@
+ATOM 6502 CYD V101
+====================
+
+Built directly from the tested V100 baseline.
+
+Programming standard retained
+-----------------------------
+- Keep the Atom emulator generic.
+- Emulate genuine Atom hardware/ROM behaviour wherever practical.
+- Do not add Invaders-specific addresses, PC traps, signatures or game tests.
+- Game-specific changes stay in the game image only when genuinely required.
+
+V101 automatic direct-scanner keyboard
+--------------------------------------
+V070/V079a required typing GAMEKEYS ON before INVADERSZX could use serial
+Z, X and SPACE as physical Atom matrix keys. V101 removes that mode switch.
+
+V101 keeps ONE ordered keyboard FIFO. Z, X and SPACE are tagged inside that
+FIFO as DIRECT-capable keys. This is important: there are not two independent
+copies of the character. Whichever input path actually consumes the FIFO entry
+owns it. This prevents game keys from remaining queued and appearing later at
+the BASIC prompt.
+
+Consumer 1 - genuine Atom OSRDCH
+--------------------------------
+During the Kernel FE71 keyboard scan, Z/X/SPACE behave exactly like ordinary
+queued characters. They are latched and consumed by the existing OSRDCH path.
+Thus normal BASIC typing such as PRINT "XYZ" remains unchanged.
+
+Consumer 2 - direct 8255 matrix scan
+------------------------------------
+Outside the genuine FE71 OSRDCH scan, if the oldest FIFO entry is Z, X or
+SPACE, V101 waits until software actually selects that key's matrix row. It
+then exposes the physical contact for about 90 ms. After that hold interval,
+the SAME FIFO entry is consumed. Merely reading B001 on some unrelated row
+does not claim or discard the key.
+
+Mappings are unchanged from V070:
+- Z     -> row 1, column 5
+- X     -> row 3, column 5
+- SPACE -> row 9, column 0
+
+FE71 discrimination
+--------------------
+The emulator suppresses the direct path only when BOTH conditions are true:
+- CPU PC is inside the real Kernel FE71 scan routine ($FE71-$FE91), and
+- the stack return address is one of the three genuine FE71 callers:
+    $FEA1  release scan
+    $FEA9  acquire new key
+    $FEAE  verify same key
+Using both conditions avoids an unrelated machine-code stack value accidentally
+being mistaken for OSRDCH.
+
+Removed
+-------
+- GAMEKEYS ON/OFF host command parsing.
+- GAMEKEYS enable/disable state.
+- Separate game-key side channel.
+
+No new Atom RAM or I/O address is consumed.
+No Invaders-specific emulator detection is added.
+INVADERSZX needs no new V101 startup patch, provided it is already the version
+patched to scan physical Z/X/SPACE.
+
+Unchanged
+---------
+- V100 RND seed fix.
+- V096 generic audio/PC2 behaviour.
+- ESC physical-key handling.
+- ~BREAK host escape.
+- Cassette, video, sound and other emulator behaviour.
+
+Tests
+-----
+1. Boot to BASIC and type lines containing Z, X and spaces.
+2. PRINT "XYZ" repeatedly; verify no missing or duplicate characters.
+3. Type mixed text such as ABC X Y Z 123 to verify FIFO ordering.
+4. Run INVADERSZX WITHOUT typing GAMEKEYS ON.
+5. Verify Z=left, X=right and SPACE=fire.
+6. Use several game keys, then ~BREAK; verify no Z/X/SPACE spill into BASIC.
+7. Recheck PRINT RND and all V096 Invaders sounds as regression tests.

@@ -1,0 +1,25 @@
+V123 - proven Atom screen-output serial mirror
+
+Based directly on stable V121.
+
+Diagnostics established that the genuine kernel routine at $FCEA receives the
+original ASCII/control byte in A. The conversion to MC6847 screen code happens
+later at $FD2D-$FD31, with the screen write at $FD36.
+
+V123 therefore mirrors A on entry to $FCEA.
+
+Control:
+  ?#BFFE=1   ON
+  ?#BFFE=0   OFF
+
+Default after emulator startup: OFF.
+
+Test:
+  ?#BFFE=1
+  PRINT "HELLO"
+  ?#BFFE=0
+
+The serial stream contains the actual control bytes too (CR/LF), not diagnostic
+[ASCII-TRACE] text.
+
+PSRAM must be enabled on the 8048S070 ESP32-S3 board.

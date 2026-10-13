@@ -1,0 +1,56 @@
+ATOM 6502 CYD V067a
+===================
+
+Purpose
+-------
+Fix V067 SAVE capture. V066 LOAD path is unchanged.
+
+Problem in V067
+---------------
+Logical zero cassette bits were detected by timing apart the four repeated
+STA $B002 writes produced by the Atom ROM's 1.2 kHz routine. That heuristic
+was fragile and could prevent a complete framed byte stream from being seen.
+
+Fix
+---
+Use the ROM's deterministic state instead:
+
+1 bit:
+  FC94 STA $B002 ($07), callback sees next PC $FC97.
+  Exactly one write occurs per serial bit.
+
+0 bit:
+  FCA0 STA $B002 ($04), callback sees next PC $FCA3.
+  This repeats four times, but Y starts at 4 and decrements after each cycle.
+  Therefore only the write with Y==4 is accepted.
+
+No timing threshold is used for output-bit decoding.
+
+Diagnostics
+-----------
+On successful final block capture:
+[TAPE-SAVE] Captured final block: bytes=... bits=... ones=... zeros=... frameErrors=...
+
+On conversion failure, the same counts are printed.
+
+Test
+----
+10 PRINT "HELLO FROM ATOM"
+20 END
+SAVE "HELLO"
+
+When RECORD TAPE appears, press RETURN once.
+
+Expected Serial:
+[TAPE-SAVE] OSSAVE started; waiting for real Atom cassette output
+[TAPE-SAVE] Captured final block: ...
+[TAPE-SAVE] Wrote /ATOM/TAPES/HELLO.atm
+[TAPE-SAVE] Name="HELLO" ...
+
+Then:
+10 PRINT "CHANGED"
+LOAD "HELLO"
+
+Press RETURN at PLAY TAPE, then:
+LIST
+RUN

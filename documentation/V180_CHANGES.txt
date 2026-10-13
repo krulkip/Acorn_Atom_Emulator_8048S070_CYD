@@ -1,0 +1,10 @@
+V180 changes from V179 fixed
+
+1. Banner cleanup race fixed.
+   V179 detected only the initial "ACORN ATOM" text and could therefore run
+   before AtoMMC2 had appended " + ATOMMC2". V180 waits for the complete
+   "ACORN ATOM + ATOMMC2" pattern at $8000 before applying the proven
+   ACORN ATOM+ cleanup. The same full-pattern test is used after BREAK.
+
+2. BBC LINK #4000 fast OSRDCH-synchronised input from V179 is unchanged.
+3. ASBK-S V24 / AtoMMC2 / BREAK / SHIFT+BREAK behaviour is otherwise unchanged.

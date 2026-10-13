@@ -1,0 +1,48 @@
+ATOM 6502 CYD V065
+==================
+
+Purpose
+-------
+SD-card / TFT coexistence test only. Cassette emulation is NOT added yet.
+
+Baseline
+--------
+Built directly from the confirmed-working V064.
+
+JC2432W328 buses
+----------------
+TFT_eSPI: HSPI, SCLK=14 MISO=12 MOSI=13 CS=15
+microSD : VSPI, SCLK=18 MISO=19 MOSI=23 CS=5
+
+Behaviour
+---------
+- Initializes SD explicitly with SPIClass(VSPI).
+- Uses a conservative 4 MHz SD clock for this first test.
+- If no card is inserted or mounting fails, the Atom continues normally.
+- If mounted, prints card type and capacity.
+- Creates /ATOM and /ATOM/TAPES if absent.
+- Lists /ATOM/TAPES.
+- Does not read/write Atom cassette data yet.
+- V064 video, keyboard, colour and real 8255 speaker behaviour are unchanged.
+
+Expected serial output with no card
+-----------------------------------
+[SD] VSPI SCK=18 MISO=19 MOSI=23 CS=5
+[SD] No card / mount failed (continuing without SD)
+
+Expected serial output with a FAT32 card
+----------------------------------------
+[SD] VSPI SCK=18 MISO=19 MOSI=23 CS=5
+[SD] Mounted OK, type=..., size=... MB
+[SD] Created /ATOM                  (first boot only)
+[SD] Created /ATOM/TAPES            (first boot only)
+[SD] /ATOM/TAPES contents:
+[SD]   <empty>
+
+V065 acceptance test
+--------------------
+1. Boot with no SD card: Atom must still work exactly like V064.
+2. Insert a FAT32 card and reboot.
+3. Confirm SD mounts and /ATOM/TAPES is listed.
+4. Confirm Atom text, keyboard, graphics/colour and PRINT $7 bell still work.
+5. Confirm no watchdog reset.

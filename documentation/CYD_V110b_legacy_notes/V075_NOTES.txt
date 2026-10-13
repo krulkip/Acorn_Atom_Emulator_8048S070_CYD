@@ -1,0 +1,39 @@
+ATOM 6502 CYD V075
+===================
+
+Built directly from the confirmed-working V074.
+
+Purpose
+-------
+Measure actual emulated 6502 speed before changing CPU timing.
+
+Once per approximately one real second the CPU task compares:
+  clockticks6502 delta / ESP32 high-resolution elapsed time
+
+Example:
+  [CPU] 934821 cycles in 1.000 s = 0.935 MHz  PC=$FE78
+
+This counts actual emulated 6502 cycles, not instructions.
+
+No CPU timing or throttling behavior is changed in V075.
+
+Recommended measurements
+------------------------
+1. Idle at the Atom '>' prompt for 5-10 seconds.
+2. BASIC:
+     10 GOTO 10
+     RUN
+   Record 5-10 lines, then use ~BREAK.
+3. INVADERSZX during actual gameplay.
+   Record 5-10 lines.
+
+Send the [CPU] lines from all three tests. This will show whether the speed
+error is constant or workload-dependent before we design the 1 MHz governor.
+
+All V074 functionality is retained:
+- ~BREAK
+- fast SD LOAD
+- ROM-native *CAT
+- GAMEKEYS ON/OFF
+- P-Charme
+- version-derived boot screen

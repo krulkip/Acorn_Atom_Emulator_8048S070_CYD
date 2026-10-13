@@ -1,0 +1,22 @@
+V048 modifier lifetime correction
+
+Baseline: V047.
+
+Observed on CYD:
+  typed: 10 PRINT "HELLO"'
+  shown: 10 PRINT 2hello27
+
+Root cause found in actual V047 source:
+- At ROM PC FEB1 the queued physical key was committed and V047 immediately
+  cleared kbd_shift/kbd_ctrl.
+- The Atom ROM does not test SHIFT/CTRL until later in its decode path
+  (BIT $B001 at FDD8/FDE2).
+- Therefore shifted punctuation lost SHIFT before decoding: " became 2,
+  apostrophe became 7.
+
+V048 change:
+- At FEB1 consume/release only the matrix key row/column.
+- Preserve SHIFT/CTRL through the ROM decode.
+- Clear SHIFT/CTRL at FDE9, after the ROM modifier tests have completed.
+
+Everything else from V047 is unchanged.

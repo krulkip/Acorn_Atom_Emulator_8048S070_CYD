@@ -1,0 +1,50 @@
+ATOM 6502 CYD V108a - PRODUCTION CLEANUP
+============================================
+
+Baseline
+--------
+V108, whose emulation behaviour was inherited from the tested V105b baseline.
+
+Kept deliberately
+-----------------
+- The V108 [CPU] speed diagnostic remains enabled.
+- Its low-overhead timer check (once per 2048 instructions) remains unchanged.
+- The 1 MHz governor remains unchanged.
+- The complete functional FE71/OSRDCH discrimination remains.
+- atom_kbd_cpu_pc() remains called exactly as in V105b/V108.
+- Automatic Z/X/SPACE direct game-key handling remains unchanged.
+- ESC and ~BREAK handling remain unchanged.
+- last_oswrch_char / last_oswrch_count prompt tracking remains because the
+  startup/wake logic still uses it.
+- atom_last_b000_write remains because the 6847 renderer uses it to determine
+  display mode.
+
+Removed
+-------
+- V108 temporary [PERF-LITE] video profiler.
+- fe71_hits / fe94_hits and their old print counters.
+- bff0_hits / bff1_hits.
+- osrdch_stub_hits.
+- 128-entry pc_trace / pc_trace_count.
+- dead 8255 access counters atom_b000_writes / atom_b001_reads /
+  atom_b002_reads / atom_b003_writes.
+- dead last-value diagnostics atom_last_b001_read / atom_last_b002_read /
+  atom_last_b003_write.
+- dead atom_kbd debug counters and last-row/last-return/last-key snapshots.
+
+Important
+---------
+This cleanup intentionally does NOT remove FE71 logic merely because its name
+comes from an old investigation.  The remaining FE71 caller/PC discrimination
+is now functional emulator logic: it separates normal Kernel OSRDCH scans from
+direct physical 8255 matrix scans used by games.
+
+Regression tests
+----------------
+1. BASIC typing.
+2. LOAD "INVADERSZX" with auto-mount.
+3. Z / X / SPACE.
+4. ~BREAK.
+5. SAVE/LOAD round trip.
+6. BOOT screenshot.
+7. Observe [CPU] speed lines remain present.

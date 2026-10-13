@@ -1,0 +1,57 @@
+ATOM 6502 CYD V109e
+====================
+
+Baseline
+--------
+V109d.
+
+Fix 1 - post-*CAT ERROR 94
+--------------------------
+V109d successfully changed directory and displayed the correct catalogue, but
+after *CAT GAMES1 or *CAT .. the Atom reported ERROR 94.
+
+ERROR 94 is an invalid/unknown statement terminator condition.  V109d had
+rewritten the OSCLI buffer from e.g.:
+
+  CAT GAMES1<CR>
+
+to:
+
+  CAT<CR>
+
+moving the CR several bytes earlier.  The ROM/BASIC command parser retained
+its original parse position, so after CAT returned it saw an inconsistent
+statement terminator.
+
+V109e preserves the original command length and CR position.  It changes only
+the argument bytes to spaces:
+
+  CAT       <CR>
+
+The genuine ROM still sees legal plain CAT while its parser positions remain
+consistent.
+
+Fix 2 - Frogger repeated taps
+-----------------------------
+The physical contact timings remain:
+  first press : 20 ms
+  held repeat : 40 ms
+
+The same-key repeat-recognition window changes:
+  V109d : 700 ms
+  V109e : 100 ms
+
+With 700 ms, a second human press of T/B/F/H was classified as continuation
+of the previous key rather than a fresh queued press.  In V109e only rapidly
+spaced copies (typical terminal auto-repeat stream) are treated as held-key
+evidence.  Normal repeated taps are queued and synchronised with the game's
+next matrix scan.
+
+Unchanged
+---------
+- V109b/V109d OSLOAD / automatic LOAD path.
+- Generic direct-scan keyboard architecture.
+- InvadersZX Z/X/SPACE.
+- ~BREAK and ESC.
+- current-directory LOAD/SAVE/*MOUNT.
+- screenshot and low-overhead [CPU] diagnostic.

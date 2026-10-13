@@ -1,0 +1,39 @@
+ATOM 6502 CYD V086
+===================
+
+Built directly from V085 / stable V079a audio path.
+
+Purpose
+-------
+Determine what GPIO26 physically does immediately around an Invaders shot.
+
+V085 proved that the firing routine:
+  $356C LDA $B002
+  $356F EOR #$04
+  $3571 STA $B002
+causes a real GPIO26 edge.
+
+V086 now records every physical GPIO26 edge in a rolling history using
+micros() wall-clock timestamps.
+
+For each successful FIRE write it reports:
+  50 ms BEFORE the shot
+  through
+  100 ms AFTER the shot
+
+Example:
+  [FIRE-WINDOW]       +12 us PC=$3574 GPIO26 1->0 <FIRE>
+  [FIRE-WINDOW]     +8450 us PC=$xxxx GPIO26 0->1
+  ...
+
+This answers whether another PC2/GPIO transition immediately follows the
+single firing edge and effectively turns it into a very short pulse.
+
+Test
+----
+Run Invaders with GAMEKEYS ON.
+Press SPACE once, preferably with a pause before the next SPACE.
+Wait ~0.2 seconds for the FIRE-WINDOW report.
+Send the complete FIRE-WINDOW block.
+
+No sound behavior is changed.

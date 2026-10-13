@@ -1,0 +1,60 @@
+V139
+====
+
+Clean milestone based directly on the proven V136 baseline.
+
+Configuration
+-------------
+- PIC ATMMC3E V3.02 E000 ROM: original unpatched image
+- ASBK-S V24
+- Axxx ROM cycling working
+- AtoMMC *CAT / *CWD working
+- AtoMMC *RUN with long Atom names working when used in the correct current directory
+- No V137 ATMMC3E filename patch
+- No V138D serial diagnostics
+- No changes to atommc_stub.cpp
+
+Important AtoMMC directory behaviour
+------------------------------------
+These commands are intentionally different:
+
+    *CAT GAMES05
+
+catalogues GAMES05 but DOES NOT change the current working directory.
+
+To enter that directory, use:
+
+    *CWD GAMES05
+    *CAT
+    *RUN INVADERSZX
+
+This matches the genuine AtoMMC command semantics.
+
+Why INVADERSZX previously failed
+--------------------------------
+The 10-character name INVADERSZX is accepted intact. The failure occurred
+because the current AtoMMC directory was still '/', so the backend correctly
+looked for:
+
+    /ATOM/TAPES/INVADERSZX.atm
+
+instead of:
+
+    /ATOM/TAPES/GAMES05/INVADERSZX.atm
+
+After:
+
+    *CWD GAMES05
+
+the file opens and *RUN works normally.
+
+Recommended verification
+------------------------
+    *CAT
+    *CAT GAMES05
+    *CWD GAMES05
+    *CAT
+    *RUN INVADERSZX
+    *RUN ASTEROIDSZX
+
+Also verify SALFAA SHOW and PCBOX commands to confirm Axxx ROM cycling.

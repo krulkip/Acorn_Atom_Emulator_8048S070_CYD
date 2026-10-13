@@ -1,0 +1,6 @@
+V117 build fix
+
+No functional change from V116a diagnostics.
+Added explicit #include <stdio.h> to fake6502.c and fakemem.c because both diagnostic paths use printf().
+
+If Arduino 1.8.19 still reports a host-side exception with runtime: unknown pc and 0xCCCC patterns, close/reopen the IDE and rebuild; that output is from arduino-builder.exe crashing, not a normal compiler diagnostic.

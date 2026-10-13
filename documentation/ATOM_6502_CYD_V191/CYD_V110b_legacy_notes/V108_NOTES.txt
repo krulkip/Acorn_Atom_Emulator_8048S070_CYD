@@ -1,0 +1,64 @@
+ATOM 6502 CYD V108 - LOW-OVERHEAD PERFORMANCE DIAGNOSTIC
+================================================================
+
+Baseline
+--------
+Built directly from the tested V105b baseline.
+
+Functional emulation changes
+----------------------------
+NONE intended.
+
+The V105b implementations of:
+  - Atom keyboard / FE71 flow tracking
+  - automatic Z/X/SPACE direct game keys
+  - ~BREAK
+  - Turbo LOAD
+  - Turbo SAVE
+  - automatic named LOAD mounting
+  - video modes
+  - audio
+  - screenshot capture
+remain unchanged.
+
+What V108 changes
+-----------------
+1. The existing [CPU] speed diagnostic is made genuinely low overhead.
+
+   V105b called esp_timer_get_time() after every emulated 6502 instruction
+   solely to decide whether it was time to print the once-per-second [CPU]
+   line.
+
+   V108 checks that diagnostic timer only once per 2048 instructions.
+
+   IMPORTANT: the actual V105b 1 MHz governor is NOT changed.
+
+2. A coarse [PERF-LITE] video measurement is printed about every 10 seconds.
+   atom_video_update() is timed only when it runs (normally about 20 times/s),
+   so this adds negligible profiling overhead.
+
+Why
+---
+V106's detailed per-memory-access counters significantly slowed the emulator
+and were useful for traffic ratios, but not for absolute speed.
+
+V108 is intended to answer whether the diagnostic timer itself was consuming
+a significant fraction of ESP32 execution time, while preserving the complete
+known-good V105b compatibility path.
+
+Test
+----
+A) BASIC prompt:
+   Leave at > for at least 12 seconds.
+   Record several [CPU] lines and one [PERF-LITE] line.
+
+B) InvadersZX:
+   LOAD "INVADERSZX"
+   Verify Z / X / SPACE still work.
+   Play for at least 12 seconds.
+   Record [CPU] and [PERF-LITE].
+
+C) Verify ~BREAK still works.
+
+Do not treat V108 as a new compatibility baseline until those regression
+checks have passed.

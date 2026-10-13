@@ -1,0 +1,44 @@
+ATOM 6502 CYD V105
+==================
+
+Baseline
+--------
+V105 is based directly on the tested V104b build.  V104b Turbo SAVE and
+all existing cassette, keyboard, display, screenshot and audio behaviour are
+otherwise unchanged.
+
+Change: automatic ATM selection for named LOAD
+-----------------------------------------------
+The genuine Atom OSLOAD interface is retained.  At the existing Kernel
+OSLOAD implementation hook ($F958), X points to the standard zero-page
+OSLOAD control block.  X+0 contains a pointer to the CR-terminated filename.
+
+V105 reads that genuine requested Atom filename and searches /ATOM/TAPES for
+a matching .atm file, case-insensitively.  It compares both:
+  1. the filename stored in the 16-byte ATM header (preferred), and
+  2. the SD-card basename without .atm (fallback).
+
+If a match is found, that ATM is mounted and rewound before the unmodified
+Kernel LOAD routine continues.  The existing V073 Turbo LOAD/OSBGET path then
+loads it normally.
+
+If the requested name is already mounted, no directory scan is performed.
+If no matching ATM exists, V105 does not disturb the existing mounted tape;
+it falls back to the same manual/virtual-cassette behaviour as V104b.
+
+Manual *MOUNT remains supported.
+
+Expected normal workflow
+------------------------
+  *CAT
+  LOAD "INVADERSZX"
+
+No preceding *MOUNT should be required when INVADERSZX.atm (or an ATM whose
+internal filename is INVADERSZX) is present in /ATOM/TAPES.
+
+Serial diagnostics
+------------------
+Successful automatic selection prints:
+  [AUTO-MOUNT] LOAD "INVADERSZX" -> /ATOM/TAPES/INVADERSZX.atm
+
+A missing match reports that the current cassette is being retained.

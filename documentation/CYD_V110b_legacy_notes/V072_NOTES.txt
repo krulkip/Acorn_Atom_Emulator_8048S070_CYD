@@ -1,0 +1,49 @@
+ATOM 6502 CYD V072
+===================
+
+Baseline
+--------
+Built from V070a so the fixed case-insensitive GAMEKEYS ON/OFF parser is
+retained. V071 boot-screen improvements are also incorporated.
+
+Boot screen
+-----------
+- Minimum display time: 2.5 seconds
+- Shows version derived from the .ino filename, e.g. V072
+
+Automatic virtual-tape turbo
+----------------------------
+No switch and no new command.
+
+Normal CPU throttle:
+  vTaskDelay(1) every 256 instructions
+
+While the genuine Atom ROM is actively reading a virtual cassette:
+  vTaskDelay(1) every 16384 instructions
+
+This is about 64 times less host-side throttling. The actual gain will be
+lower because instruction emulation, serial logging and RTOS work still take
+time.
+
+Important: logical cassette timing is NOT changed. The virtual cassette still
+generates its 300-baud waveform from emulated 6502 cycle counts. CPU and tape
+simply run faster together in real wall-clock time. The genuine Atom cassette
+ROM and checksum/parser paths are unchanged.
+
+Turbo engages automatically when the ROM cassette reader starts and switches
+off automatically at end-of-tape.
+
+Expected Serial:
+  [TAPE] PLAY: synthesizing real 300-baud Atom cassette signal
+  [TAPE-TURBO] ON
+  ...
+  [TAPE] End of virtual cassette
+  [TAPE-TURBO] OFF
+
+GAMEKEYS
+--------
+Retains V070a:
+  gamekeys on / GAMEKEYS ON / mixed case
+  gamekeys off / GAMEKEYS OFF / mixed case
+
+No change to sound, video, P-Charme, SAVE/LOAD format, or normal CPU timing.

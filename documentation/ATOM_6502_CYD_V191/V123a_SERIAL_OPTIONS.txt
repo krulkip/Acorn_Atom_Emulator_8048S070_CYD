@@ -1,0 +1,21 @@
+V123a serial options
+
+At the top of the .ino:
+
+#define SERIAL_SHOW_CPU_DIAGNOSTIC       0
+#define SERIAL_SHOW_RX_MATRIX_DIAGNOSTIC 0
+
+Set either to 1 if that diagnostic is wanted.
+
+These switches do NOT suppress normal boot/status serial messages.
+They also do NOT affect the Atom output mirror controlled by $BFFE.
+
+Atom output mirror:
+  ?#BFFE=1   ON
+  ?#BFFE=0   OFF
+
+The included ASBK EXEC source is the fixed-geometry Debug5 source with:
+  1095?#BFFE=1
+so its screen output is mirrored to serial during ASBK assembly/testing.
+
+PSRAM must remain enabled for the 8048S070 ESP32-S3 build.

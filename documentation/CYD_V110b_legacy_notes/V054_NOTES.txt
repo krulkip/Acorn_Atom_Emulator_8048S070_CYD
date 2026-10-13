@@ -1,0 +1,29 @@
+V054 - Atom F-ROM mapping fix
+
+Baseline: V051, the last confirmed-working keyboard/text version.
+
+One functional fix only:
+- Removed the obsolete generic-emulator callable-memory interception for $F000-$F0FF.
+  On the Acorn Atom this range is genuine Kernel ROM. The old code treated any
+  read in $F000-$F0FF as a potential callback and indexed an unsized callback
+  table. CLEAR enters the F-ROM command interpreter at $F04B, so the stale
+  callback layer could dereference an out-of-range/random function pointer and
+  watchdog-reset the ESP32.
+
+Also removed the unused callable-registration helpers and declarations. No code
+in this Atom project called them. This also removes the old incomplete-array
+compiler warning.
+
+Deliberately unchanged from V051:
+- keyboard matrix and ESC path
+- cycle-timed flyback
+- text renderer and Atom glyph mapping
+- TFT_eSPI / board-selection setup
+- CPU opcode implementation
+- VIA emulation
+- ROM loading and memory contents
+
+First test:
+  CLEAR 1
+Expected: no watchdog reset. The current text renderer may go blank because
+graphics are not yet rendered. Then type CLEAR 0 blind to return to text mode.

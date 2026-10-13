@@ -1,0 +1,57 @@
+ATOM 6502 CYD V068f
+===================
+
+Fix for the V068e heap corruption after ROM-native *CAT.
+
+Observed V068e sequence
+-----------------------
+[TAPE] End of virtual cassette
+[CAT] End reached - asserting automatic CTRL
+[CAT] End of SD catalogue - automatic CTRL released
+CORRUPT HEAP: Bad tail ...
+
+Cause
+-----
+atom_cat_rom_exit() immediately called atomTapeBuildFromAtm() to restore the
+previously mounted cassette. atomTapeBuildFromAtm() frees/replaces
+atomTapeStream.
+
+But atom_cat_rom_exit() is reached while the genuine ROM cassette/*CAT call
+chain is still unwinding and cassette-input code can still be using the
+synthetic catalogue buffer. This created a use-after-free / heap poisoning.
+
+V068f fix
+---------
+atom_cat_rom_exit():
+- releases the synthetic CTRL line
+- marks catalogue inactive
+- records the cassette path to restore
+- DOES NOT free or rebuild any cassette buffer
+
+loop():
+- waits until PC is safely outside the cassette/COS ROM region
+- then restores the previously mounted .atm file
+
+Other V068e functionality is retained:
+- genuine ROM-native *CAT
+- automatic CTRL equivalent at catalogue end
+- accurate first-block length field
+- silent *MOUNT filename
+- V067a SAVE
+- V066 LOAD
+
+Test
+----
+1. *CAT
+2. Press RETURN at PLAY TAPE.
+3. Both files should display.
+4. After the final file the Atom should return to '>' automatically.
+5. Serial should show:
+     [CAT] End reached - asserting automatic CTRL
+     [CAT] End of SD catalogue - automatic CTRL released
+     [CAT] Cassette restore deferred: ...
+     [CAT] Restored mounted cassette ...
+6. No heap corruption/reset.
+7. Then test:
+     *MOUNT HELLO
+     LOAD "HELLO"

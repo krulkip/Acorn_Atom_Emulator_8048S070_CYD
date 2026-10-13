@@ -1,0 +1,17 @@
+CYD V190 PORT5 diagnostic changes
+=================================
+Based directly on PORT4.
+
+Purpose: isolate the post-initialisation LoadProhibited crash while the
+replacement MCP23017 is unavailable.
+
+Changes only:
+- Temporarily bypass physical MCP23017 keyboard initialisation/task.
+- Omit the nonessential one-shot atom_scan_task (4096-byte task stack), giving
+  useful runtime heap headroom without changing Atom RAM, ROMs, ASBK, AtoMMC,
+  FE71, display, SD, serial keyboard or CPU emulation.
+- Log cpu_task creation result and free heap.
+- Log free heap after setup reaches the HW-keyboard bypass point.
+
+GPIO21/22 and the V190 keyboard source remain in the project and can be
+re-enabled after diagnosis/replacement MCP23017 testing.

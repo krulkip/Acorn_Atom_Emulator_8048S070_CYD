@@ -1,0 +1,38 @@
+ATOM_6502_CYD_OK_V064
+======================
+
+Baseline
+--------
+Built directly from the confirmed-working V063.
+
+V064 change: real Atom loudspeaker path
+---------------------------------------
+The standard Atom Kernel BEL routine does not use a host-side BEEP command.
+It writes $05 and $04 to the 8255 control register at $B003.  Those are 8255
+Bit Set/Reset (BSR) commands for Port-C bit 2:
+
+  $05 = SET PC2
+  $04 = RESET PC2
+
+PC2 is the real Atom loudspeaker output.
+
+V064 therefore:
+  * Implements 8255 BSR writes at $B003.
+  * Maintains the Port-C output latch in $B002.
+  * Drives the physical CYD/JC2432W328 speaker output from PC2.
+  * Uses ATOM_AUDIO_PIN=GPIO26 from the board configuration.
+  * Preserves PC3, already used as the real Atom MC6847 CSS colour-set line.
+  * Returns the low Port-C output latch bits on reads of $B002, while keeping
+    the existing VBL/REPT input synthesis in the upper bits.
+
+No video, keyboard, BASIC, ROM mapping, graphics or colour renderer logic was
+changed for V064.
+
+First sound test
+----------------
+Use a real Atom path that sends ASCII BEL ($07) through WRCHAR.  The Kernel
+then executes its own FD1A BEL routine and toggles PC2 through $B003.
+
+If testing through a terminal, sending Ctrl-G (ASCII 0x07) is useful only if
+it reaches the Atom input path as that byte; some terminal programs consume
+Ctrl-G locally.  A BASIC/ROM-generated BEL is preferable when available.

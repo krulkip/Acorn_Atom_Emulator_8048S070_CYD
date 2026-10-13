@@ -1,0 +1,69 @@
+ATOM 6502 CYD V069
+===================
+
+Baseline
+--------
+Built directly from the confirmed-working V068g milestone.
+
+New feature
+-----------
+Optional 4 KB Utility ROM at $A000-$AFFF.
+
+Included test ROM
+-----------------
+File   : /Atom_pcharme.rom
+Size   : 4096 bytes
+SHA256 : 11dd2a7a2d5579aabebddc12db3dae05e4f460a6736a150201bf31ee2901d760
+Map    : $A000-$AFFF
+A000/1 : 40 BF
+A002.. : 20 0F A6 F0 3A AD
+
+Why this should work without emulator hooks
+-------------------------------------------
+The installed Atom Floating Point ROM checks $A000 and $A001 when it cannot
+match a command in its own D-ROM table. If they contain $40 and $BF, it jumps
+directly to the Utility ROM interpreter at $A002.
+
+This P-Charme image begins with exactly:
+  $A000 = $40
+  $A001 = $BF
+
+Therefore the genuine command chain is:
+  Atom BASIC -> Floating Point ROM -> P-Charme Utility ROM at $A002
+
+No P-Charme command has been intercepted or reimplemented by the ESP32.
+
+Strings/commands visible in the supplied ROM
+--------------------------------------------
+RENUM, AUTO, CONT, DEL, READ, PEND, CEND, WHILE, WEND, XIF, RELSE, FEND, BEEP, ON ERROR, ON, CASE, COPY, ICOPY, POP, KEY, INKEY, ZERO, VTAB, HTAB, DATA, FUNCTION, PROC, PROGRAM, PAUSE, BSAVE, VAR, HEX, CAT, COS, STOP, RESTORE, GOTO, GOSUB, TRUE, FALSE, INSTR, NOT, EVEN, ODD
+
+Particularly useful first tests
+-------------------------------
+BEEP
+
+This is especially valuable because V064 already emulates the real 8255 PC2
+speaker. If P-Charme's BEEP routine uses the normal Atom speaker hardware, it
+should sound through the CYD automatically.
+
+Other low-risk tests:
+  CAT
+  AUTO
+  CONT
+  PAUSE
+
+Be cautious initially with commands that modify BASIC program text such as
+DEL, RENUM, COPY, BSAVE etc. First establish that command chaining itself is
+correct.
+
+Boot diagnostics
+----------------
+Expected:
+[ATOM] Loaded /Atom_pcharme.rom        at $A000-$AFFF
+[AROM] Signature A000/A001 = 40 BF
+[AROM] Interpreter entry $A002: ...
+[AROM] P-Charme/Utility ROM signature valid; D-ROM can chain to $A002
+
+Fallback
+--------
+If /Atom_pcharme.rom is absent from SPIFFS, V069 continues booting with the
+V068g BASIC/FP/KERNEL configuration.

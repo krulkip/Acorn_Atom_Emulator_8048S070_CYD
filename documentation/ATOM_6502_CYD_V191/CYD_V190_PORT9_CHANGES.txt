@@ -1,0 +1,24 @@
+CYD V190 PORT9
+===============
+Based directly on tested CYD V190 PORT8.
+
+Only functional change from PORT8:
+- Re-enable the proven V190 full 8x8 MCP23017 physical keyboard path.
+- MCP23017 address: 0x20.
+- CYD software-I2C pins: SDA GPIO21, SCL GPIO22.
+- Keyboard is initialised after Atom reset/vector setup, matching V190.
+- Background scanner task restored on core 0, priority 1, 3072-byte stack.
+- Full V190 held-matrix behaviour and V190 750 ms external-FE71 key-event latch remain intact.
+- BREAK remains PA5; physical MCP PB5=CTRL, PB6=SHIFT, PB7=REPT.
+- SHIFT+BREAK uses the existing V190 path to request Atom reset and inject LINK #4000 after release.
+
+Unchanged from PORT8:
+- Proven CYD TFT_eSPI renderer.
+- AtoMMC2 / ASBK-S V24 / A000 banking.
+- BBC BASIC path.
+- SD, tape, screenshots, audio.
+- V190 boot-banner cleanup to ACORN ATOM+.
+- JC2432W328 RGB LED GPIO4/16/17 forced off.
+
+Future:
+- 0x21 Hackjunk keyboard auto-detection is NOT included in PORT9. First prove the normal 0x20 keyboard path.

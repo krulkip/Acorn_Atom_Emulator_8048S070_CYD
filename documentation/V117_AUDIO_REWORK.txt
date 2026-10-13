@@ -1,0 +1,17 @@
+V117 audio rework
+
+Base: stable V116c AtoMMC Step-3 build.
+
+Audio changes only:
+- Restores MAX98357/I2S output.
+- Keeps V110b V096 PC2 model parameters unchanged: kick 92, 8 steps, 75 us, decay 5/8.
+- Precomputes/queues the full 600-us transient immediately on each PC2 edge.
+- Preserves the same total 600-us CPU-side edge timing.
+- I2S outputs 24-frame / 600-us stereo blocks instead of 3-frame / 75-us writes.
+- Reduces I2S DMA buffers from 8x128 to 6x64.
+
+Primary tests:
+1. Boot and AtoMMC *CAT / *INFO / *LOAD / *RUN.
+2. *CWD Games05 ; *RUN INVADERSZX and play through repeated sound/collision events.
+3. Compare sound quality with V116b and stability with V116c.
+4. Wrong-directory *LOAD INVADERSZX should give Error 161 without reset.

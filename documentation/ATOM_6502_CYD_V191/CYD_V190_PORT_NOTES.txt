@@ -1,0 +1,33 @@
+ATOM 6502 CYD V190 PORT
+=======================
+
+Baseline hardware: exact user-supplied CYD V110b.
+Generic emulator functionality: ported from tested 8048S070 V190.
+
+CYD hardware intentionally retained:
+- TFT_eSPI / JC2432W328 ST7789 display setup
+- dedicated SD VSPI pins SCK=18 MISO=19 MOSI=23 CS=5
+- GPIO26 PWM Atom PC2 audio path from CYD V110b
+- GPIO27 display backlight
+- GPIO0 screenshot button
+
+Physical Atom keyboard added to CYD IO2 connector:
+- MCP23017 address 0x20
+- SDA GPIO21
+- SCL GPIO22
+- V188/V190 true released-line software-I2C implementation
+- background scanner on core 0, priority 1
+- V190 one-shot external-FE71 physical-key event latch (750 ms)
+- normal held-key/raw-matrix behavior remains unchanged
+
+V190 generic functionality brought across includes the later AtoMMC/ASBK-S
+integration, banked Axxx utility ROM support, current-directory work, serial
+keyboard refinements, and the external-FE71 serial/physical keyboard paths.
+The original CYD V110b should remain archived as the recovery baseline.
+
+FIRST BUILD STATUS
+------------------
+This is the first CYD V190 port candidate and must be compiled/tested on the
+actual CYD before it is declared frozen.  Recommended first checks: boot,
+TFT, SD/*CAT, audio, serial keyboard, MCP keyboard, BREAK, ASBK/Axxx commands,
+LOAD/RUN, InvadersZX and Frogger.

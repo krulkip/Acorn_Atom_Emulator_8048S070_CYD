@@ -1,0 +1,31 @@
+V120 - AtoMMC Step 4 writable filesystem
+
+Based on stable V119. Audio is unchanged.
+
+New genuine AtoMMC controller operations:
+  CMD_DIR_GETCWD   03
+  CMD_DIR_MKDIR    04
+  CMD_DIR_RMDIR    05
+  CMD_RENAME       08
+  CMD_FILE_OPEN_WRITE 13
+  CMD_FILE_DELETE  14
+  CMD_WRITE_BYTES  23
+
+Logical Atom files are stored as .atm files under /ATOM/TAPES.
+Open-write mirrors FatFS FA_CREATE_NEW: an existing file returns FR_EXIST so
+the original AtoMMC ROM can perform its own overwrite confirmation.
+
+Suggested safe test order:
+  SAVE "TEST"
+  NEW
+  LOAD "TEST"
+  *INFO TEST
+  *REN TEST TEST2
+  *CAT
+  *DELETE TEST2
+  *MKDIR TESTDIR
+  *CWD TESTDIR
+  *CWD ..
+  *RMDIR TESTDIR
+
+Use a disposable TEST program/file first.

@@ -1,0 +1,50 @@
+ATOM 6502 CYD V079
+===================
+
+Built directly from V078.
+
+Measured progress
+-----------------
+V077 idle: ~0.775 MHz
+V078 idle: ~0.822 MHz
+
+V079 optimization
+-----------------
+read6502() is now dispatched by address page before evaluating special hooks.
+
+Fast direct paths:
+  $0000-$5FFF  ordinary RAM
+  $6000        VIA
+  $6100-$AFFF  ordinary memory
+  $B000-$B003  8255 keyboard/VDG/speaker port
+  $B004-$BEFF  ordinary memory
+  $BFF0/BFF1   emulator serial hooks
+  $C000-$F8FF  ordinary ROM
+  $F900-$FBFF  cassette/COS hook pages
+  $FC00-$FFFF  ordinary Kernel ROM
+
+The important idle case is Kernel code around $FE78-$FE91. In V078 every
+opcode/operand fetch there still evaluated all cassette, CAT, MOUNT, VIA,
+serial and 8255 tests. In V079 those reads now return directly from fakemem.
+
+No emulated behavior is intentionally changed. Existing cassette/CAT/MOUNT
+hooks remain at the same exact addresses, and 8255/VIA/serial handling is
+preserved.
+
+Retained
+--------
+- V076 1 MHz governor
+- [CPU] MHz diagnostic
+- ~BREAK
+- fast LOAD
+- *CAT
+- GAMEKEYS
+- P-Charme
+- audio/video
+
+First test
+----------
+Leave idle at > for 5-10 seconds and send the [CPU] lines.
+
+If raw performance exceeds 1 MHz, the existing governor should automatically
+hold the reported speed close to 1.000 MHz.

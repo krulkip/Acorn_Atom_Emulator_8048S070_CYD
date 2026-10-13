@@ -1,0 +1,3 @@
+//#define BOARD_CYD          // ESP32-2432S028R  (ILI9341_2)
+//#define BOARD_CYD2USB   // ST7789, BL=27, BGR
+#define BOARD_JC2432W328 // ST7789, BL=27, BGR

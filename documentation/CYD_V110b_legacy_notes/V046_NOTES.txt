@@ -1,0 +1,11 @@
+V046 keyboard handshake correction
+
+Baseline: V045.
+
+Single logical change:
+- Queued host keys are no longer consumed/released according to B001 read counts.
+- A key is peeked/latching only during the genuine FEA7->FE71 acquisition scan.
+- It remains physically asserted through all acquire/verify retries.
+- The FIFO entry is consumed and the key released only when the Atom ROM reaches FEB1, which proves acquire + verify succeeded.
+
+Unchanged: V045 matrix mapping, 8255 model, real-time 60 Hz B002 flyback, startup RETURN, CPU behavior, BASIC, video renderer, VIA.

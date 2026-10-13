@@ -1,0 +1,23 @@
+CYD V190 PORT2
+==============
+Based directly on CYD V190 PORT1.
+
+Linker RAM fix:
+- PORT1 overflowed ESP32 internal DRAM by 32976 bytes.
+- The cause was the V190 eight-bank A000 Utility-ROM cache:
+    8 banks x 4096 bytes = 32768 bytes of static DRAM.
+- PORT2 removes that 32 KiB cache.
+- The eight ROM files remain in SPIFFS and are validated at startup.
+- When ASBK writes a bank number to $BFFF, the selected 4 KiB ROM is read
+  synchronously from SPIFFS directly into the existing fakemem $A000-$AFFF
+  window. There is therefore no extra 32 KiB bank cache in DRAM.
+- The normal 6502 A000 read path remains unchanged after a bank is selected.
+- ASBK-S V24, AtoMMC, BBC BASIC path, V190 FE71 event latch, and CYD hardware
+  mappings are otherwise unchanged from PORT1.
+
+Keyboard MCP23017 remains:
+  SDA GPIO21
+  SCL GPIO22
+  address 0x20
+
+PORT2 is a compile/test candidate, not yet a frozen stable release.

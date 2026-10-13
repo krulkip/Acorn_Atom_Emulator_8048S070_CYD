@@ -1,0 +1,14 @@
+V161 - BBC BASIC original BRK/error-origin diagnostic
+
+Based directly on V160. No intended behavioural changes.
+
+Adds a pre-execution trap for BRK opcodes inside ATBASIC3 ($4000-$7FFF).
+For each BRK it logs:
+- exact originating PC
+- byte immediately after BRK as BBC error number
+- following error text up to CR/NUL
+- A/X/Y/SP/P
+- BRKV, IRQV and hardware IRQ vector
+- bytes surrounding the BRK
+
+Purpose: identify the actual BBC BASIC error raised while processing valid numeric input such as PRINT 2, before the error handler changes LINE to $743C.

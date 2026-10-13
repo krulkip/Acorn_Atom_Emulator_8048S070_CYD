@@ -1,0 +1,40 @@
+ATOM 6502 CYD V060
+====================
+
+Baseline
+--------
+Built directly from the confirmed-working V059 project.
+
+Change in V060
+--------------
+Completed monochrome 6847 Mode-0 semigraphics rendering only.
+
+The Atom ROM implements Mode 0 as a 64x48 logical semigraphics screen
+over the normal 32x16 character memory.  Each screen byte with bit 6 set
+is a 2x3 semigraphics cell.  Bits 5..0 map as:
+
+  bit5 bit4   top
+  bit3 bit2   middle
+  bit1 bit0   bottom
+
+CLEAR 0 fills $8000-$81FF with $40, which is therefore an empty
+semigraphics cell.
+
+The existing proven 7x9 Mode-0 text cell geometry is retained.  A
+semigraphics cell is split into 2x3 blocks inside that same 7x9 cell.
+This avoids refactoring the working text renderer.
+
+Deliberately unchanged
+----------------------
+- Mode 0 alphanumeric rendering and Atom character mappings
+- Mode 1 128x64 renderer
+- Mode 2 128x96 renderer
+- Mode 3 128x192 renderer
+- Mode 4 256x192 renderer
+- 6502 core and F-ROM mapping fix
+- keyboard matrix, ESC/BREAK and immediate keyboard handling
+- 8255/VIA/flyback timing
+- TFT_eSPI board selection and setup
+
+Colour attributes are NOT implemented in V060; that is reserved for a
+later version after monochrome semigraphics is confirmed working.

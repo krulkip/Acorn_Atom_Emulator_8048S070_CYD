@@ -1,0 +1,27 @@
+ATOM 6502 CYD V102a
+====================
+
+Based on V102. Keyboard/emulator behaviour is unchanged.
+
+Screenshot colour correction
+----------------------------
+V102 successfully saved 320x240 24-bit BMP screenshots, but on the tested
+JC2432W328/ST7789 CYD the TFT readback returned the displayed green phosphor in
+the wrong RGB byte position, producing blue BMP pixels.
+
+V102a does not hard-code a green/blue special case. Immediately after TFT init,
+before the visible boot screen is drawn, it writes one red, green and blue test
+pixel, reads each back with readRectRGB(), restores those pixels to black, and
+derives the TFT readback channel permutation. Screenshot conversion then uses
+that calibrated channel mapping when writing BMP BGR bytes.
+
+Calibration details are reported only on Serial. No screenshot status or
+calibration text is drawn on the CYD.
+
+The screenshot path remains:
+  /ATOM/SCREENSHOTS/ATOM0001.BMP
+  /ATOM/SCREENSHOTS/ATOM0002.BMP
+  ...
+
+WDT handling remains as in V102: capture is one scanline at a time with yield()
+after every row.

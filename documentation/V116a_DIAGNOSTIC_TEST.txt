@@ -1,0 +1,24 @@
+V117 diagnostic build
+
+No intended functional filesystem changes from V116.
+
+Added diagnostics:
+- [RESET-CAUSE] reports ESP32 reset reason at startup.
+- [6502-BRK] reports BRK/error execution.
+- [EROM-GAME] / [EROM-GAME-WR] reports game code accessing #E000-#EFFF.
+
+Please test:
+1. From a directory where INVADERSZX does NOT exist:
+   *LOAD INVADERSZX
+   Note screen result and serial lines around [6502-BRK] / [RESET-CAUSE].
+
+2. CWD to Games05, then:
+   *RUN INVADERSZX
+   Fire until the reset occurs.
+   Send serial output beginning about 20 lines before FIRE-READ through the
+   first [RESET-CAUSE] after the event.
+
+Interpretation:
+- RESET-CAUSE after event => ESP32 reset; reason tells us why.
+- 6502-BRK without RESET-CAUSE => Atom error/BRK path.
+- EROM-GAME lines => Invaders accesses the new #E000 AtoMMC page.

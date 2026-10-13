@@ -1,0 +1,12 @@
+V166 - 6522 moved to original Acorn Atom address
+
+Baseline: frozen, user-confirmed V165.
+
+Functional change only:
+- Removed the fake 6522 overlay from $6000-$60FF.
+- $6000-$60FF is now ordinary backing memory in both Atom and BBC BASIC.
+- Mapped fake 6522 registers at $B800-$B80F for both Atom and BBC BASIC.
+- Existing 8255 at $B000-$B003 and AtoMMC2 at $B400-$B404 are unchanged.
+- BBC BASIC ATBASIC3, physical MCP23017 keyboard, SD/AtoMMC, audio and all other V165 behavior are otherwise unchanged.
+
+V165 remains the frozen recovery baseline.

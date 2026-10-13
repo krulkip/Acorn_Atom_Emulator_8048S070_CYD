@@ -1,0 +1,19 @@
+V164 - clean BBC BASIC milestone
+
+Based directly on the user-confirmed working V163.
+
+Retained functional fix:
+- While the CPU is executing ATBASIC3 at $4000-$7FFF, addresses $6000-$60FF
+  are read/written as normal BBC BASIC memory instead of being intercepted by
+  the emulator's fake 6522 VIA.
+- Normal Atom execution keeps the existing fake 6522 mapping unchanged.
+
+Removed:
+- V156-V163 BBC pointer, numeric-flow, PRINT and BRK diagnostic tracing.
+
+Unchanged:
+- ATBASIC3 load at $4000-$7FFF.
+- ASBK remains bypassed in BBC BASIC test line.
+- AtoMMC, Atom Kernel, keyboard, audio, SD and normal Atom behavior.
+
+V163 was confirmed working for PRINT 2, PRINT 2+2 and PRINT "HELLO".

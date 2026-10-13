@@ -1,0 +1,18 @@
+V180 - cosmetic boot cleanup + faster BBC LINK injection
+
+Base: accepted V178 milestone.
+
+1. ACORN ATOM + ATOMMC2 transient banner
+   The existing ACORN ATOM+ cleanup is unchanged, but no longer waits a fixed
+   500 ms. Cold boot and BREAK now detect the known ACORN ATOM signature at
+   $8000 and apply the cleanup immediately, preventing the temporary AtoMMC2
+   suffix from being visibly displayed before ACORN ATOM+.
+
+2. SHIFT+BREAK BBC command speed
+   LINK #4000 is still delivered exactly one character per genuine Kernel
+   OSRDCH request (the proven V173/V178 reliability fix). During this short
+   injection window the Arduino loop delay is reduced from 5 ms to 1 ms and
+   per-character Serial.printf diagnostics are removed. No FIFO burst is used.
+
+No changes to ASBK-S V24, AtoMMC vectors/filesystem, Atom BREAK semantics,
+BBC entry/clear/home, keyboard mapping, audio, tape, or CPU core.

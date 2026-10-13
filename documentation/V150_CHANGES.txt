@@ -1,0 +1,12 @@
+V151 BBC BASIC WRCVEC diagnostic
+
+Base: exact V139 known-good Atom/AtoMMC/ASBK project.
+
+Changes only:
+- Adds /ATBASIC3 (16 KiB) and loads it at $4000-$7FFF.
+- Leaves normal V139 ASBK-S LL97 and AtoMMC startup unchanged.
+- On first execution in $4000-$7FFF (LINK #4000), logs page-2 vectors and restores only WRCVEC $0208/$0209 to the clean Atom output routine $FE52.
+- Does not change RDCVEC, COMVEC, filing vectors, ASBK workspace, 6522 mapping, AtoMMC, or any other emulator behavior.
+- BREAK rearms the one-shot BBC-entry diagnostic.
+
+Purpose: test Basic2 Atom-target source behavior showing normal PRINT output uses WRCVEC directly.

@@ -1,0 +1,21 @@
+V058 - add 6847 Mode 3 graphics renderer
+
+Baseline: V057 (confirmed working Mode 0 text, Mode 1 graphics and Mode 2 graphics).
+
+Changes in V058:
+- Adds Atom/6847 Mode 3 renderer selected by Port A high nibble $B0.
+- Mode 3 logical resolution: 128x192.
+- Mode 3 VRAM: $8000-$8BFF (3072 bytes, 16 bytes per row).
+- Bit 7 is the leftmost pixel, matching the Atom ROM graphics bit-mask table.
+- Each logical pixel maps to 2x1 native 6847 raster pixels, producing a 256x192 active image.
+- The 256x192 active image is centred and integer-scaled using TFT_eSPI panel dimensions.
+- Preserves V057 Mode-0, Mode-1 and Mode-2 renderers unchanged.
+- Mode 4 remains intentionally unrendered.
+
+Recommended test:
+  CLEAR 3
+  PLOT 13,0,0
+  PLOT 13,127,191
+  PLOT 13,64,96
+  MOVE 0,0
+  DRAW 127,191

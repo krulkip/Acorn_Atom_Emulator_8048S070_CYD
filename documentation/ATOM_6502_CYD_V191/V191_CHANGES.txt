@@ -1,0 +1,33 @@
+V191 - ALL THREE MCP23017 KEYBOARDS
+===================================
+Base: ATOM_6502_CYD_V190_PORT10_0x22_SMALL_FIXED
+
+Only the hardware-keyboard layer and version/banner comments were changed.
+All V190/PORT10 Atom, BBC BASIC, ASBK-S V24, AtoMMC, display, audio,
+SD/SPIFFS, serial keyboard and screenshot behaviour is otherwise retained.
+
+Startup auto-detection (CYD I2C SDA=GPIO21, SCL=GPIO22):
+  0x20 = FULL direct 8x8 keyboard
+  0x21 = HACKJUNK legacy keyboard
+  0x22 = SMALL CTRL/SHIFT/REPT/BREAK/AUX1 keyboard
+Priority if more than one is connected: 0x20, then 0x21, then 0x22.
+
+0x20 FULL:
+- Uses the exact final 8x8 PCB matrix mapping proven in standalone tester V004.
+- GPA0..GPA7 = physical ROW0..ROW7; GPB0..GPB7 = COL0..COL7.
+- Physical keys are translated back to the Atom's native 10x6 matrix.
+- CTRL, either SHIFT, REPT and BREAK are handled as Atom special inputs.
+- V190 recent physical key-down latch for external FE71 callers retained
+  (750 ms one-shot event).
+
+0x21 HACKJUNK:
+- Uses the exact proven standalone V002 wiring: GPA row-select permutation,
+  PB0 on GPA4, PB1..PB7 on GPB0..GPB6, REPT/PC6 on GPB7, BREAK on GPA5.
+- V190 recent physical key-down latch for external FE71 callers retained.
+
+0x22 SMALL:
+- PORT10 behaviour retained: CTRL=PB5, SHIFT=PB6, REPT=PB7, BREAK=PA5.
+- AUX1=ROW1/COL7 remains screenshot trigger.
+- No ordinary matrix keys; PC/serial supplies normal Atom keys.
+
+PC/serial keyboard remains enabled with all three physical keyboard types.

@@ -1,0 +1,23 @@
+V055 - Mode-0 $40 blank-character fix
+
+Baseline: V054, confirmed to execute CLEAR 1 without watchdog reset.
+
+One renderer correction only:
+- In Atom/6847 Mode 0, screen byte $40 is the blank character used by
+  the Kernel ROM's CLEAR 0 routine. V054 fell through to the ASCII
+  fallback and rendered $40 as '@'. V055 explicitly maps $40 to a blank.
+
+Deliberately unchanged from V054:
+- F-ROM mapping fix
+- keyboard matrix, modifiers, DEL/Backspace and ESC/BREAK path
+- cycle-timed flyback
+- existing Atom glyph mappings (@ [ \ ] and up-arrow)
+- screen RAM, scrolling and text write mechanics
+- TFT_eSPI / tft_board_select.h / tft_setup.h
+- CPU opcode implementation and VIA emulation
+- ROM loading and memory map
+
+Test:
+  CLEAR 0
+Expected: the 32x16 text screen is blank rather than filled with '@',
+and normal typing remains immediately visible.

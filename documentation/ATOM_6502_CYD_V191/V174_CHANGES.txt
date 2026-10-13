@@ -1,0 +1,13 @@
+V174 - restore hexadecimal LINK and clean BBC handover screen
+
+Based directly on the proven V173.
+
+1. Keeps V173's one-character-per-genuine-OSRDCH pacing unchanged.
+2. Changes the SHIFT+BREAK command from LINK 16384 back to the preferred
+   LINK #4000. This tests whether the earlier missing # was actually caused
+   by burst FIFO delivery rather than by the Atom shifted-key mapping.
+3. After the genuine Atom LINK has transferred execution into ATBASIC3
+   ($4000-$7FFF), Mode-0 text VRAM $8000-$81FF is filled with $40 (Atom blank)
+   once, immediately before BBC BASIC produces its sign-on text. This removes
+   the visible Atom prompt/LINK command without changing the LINK calling state.
+4. ASBK remains disabled. Ordinary BREAK and all V173 timing are unchanged.

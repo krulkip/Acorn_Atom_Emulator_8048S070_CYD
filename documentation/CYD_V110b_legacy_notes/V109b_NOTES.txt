@@ -1,0 +1,9 @@
+ATOM 6502 CYD V109b - COMPILE FIX
+=================================
+
+Baseline: V109a.
+
+Fix:
+- Corrected the remaining sort-loop declaration from CatItem to AtomCatItem.
+
+No other functional changes.

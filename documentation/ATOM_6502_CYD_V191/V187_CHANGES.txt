@@ -1,0 +1,12 @@
+V187 - fast V181-style software I2C keyboard experiment
+
+Base: exact uploaded V181.
+
+Only keyboard transport changed:
+- Keeps V181 electrical behaviour: LOW = actively driven low; HIGH = pin released/high impedance with pull-up.
+- Replaces per-bit Arduino pinMode() calls with direct ESP32-S3 GPIO output-enable register writes.
+- Does NOT use OUTPUT_OPEN_DRAIN (the V185/V186 experiment).
+- Keeps V181 2 ms scan scheduler, matrix handling, BREAK debounce, FE71 behaviour, ASBK, AtoMMC and BBC paths unchanged.
+- Adds temporary 5-second [V187-KBD] scan-rate timing report.
+
+Acceptance test: keyboard scan speed plus repeated BREAK / ASBK Axxx commands / LOAD+RUN stability.

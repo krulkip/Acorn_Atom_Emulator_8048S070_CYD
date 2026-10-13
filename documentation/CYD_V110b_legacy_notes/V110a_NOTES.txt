@@ -1,0 +1,34 @@
+ATOM 6502 CYD V110a
+====================
+
+Baseline
+--------
+V110.
+
+Bug found
+---------
+The V110 external-FE71 discrete-key path consumed its pending FIFO key at
+$FEB1.
+
+That is wrong for an external JSR $FE71.
+
+Kernel ROM:
+  $FE71 ... keyboard matrix scan ...
+  $FE93 RTS
+
+$FEB1 belongs to the higher-level Kernel OSRDCH acquisition/verification path.
+An external caller such as Frogger returns directly from FE71 at $FE93 and
+never reaches $FEB1.
+
+Effect in V110
+--------------
+external_fe71_pending remained latched after a keypress. After the first
+couple of apparent responses Frogger stopped accepting new keys.
+
+Fix
+---
+Consume and clear the external FE71 pending key at $FE93 instead.
+
+The raw-matrix V101c path used by InvadersZX is unchanged.
+
+No other functional source changes.

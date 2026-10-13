@@ -1,0 +1,81 @@
+V121 - AtoMMC2 *EXEC + wildcard/path test
+==========================================
+
+V120 is the rollback baseline.
+
+What changed
+------------
+1. *EXEC is now explicitly supported by the existing controller interface.
+   The original ATMMC3E ROM performs EXEC itself: it opens the file, redirects
+   OSRDCH, and requests blocks through CMD_READ_BYTES. No emulator-only fake
+   keyboard command has been added.
+
+2. AtoMMC directory iteration now shows ordinary files too, not only .atm
+   files. This makes text files used by *EXEC visible in *CAT.
+
+3. Absolute path handling is corrected. "/" is rooted at /ATOM/TAPES.
+   Relative ".", "..", slash and backslash paths are canonicalised.
+
+4. Existing case-insensitive '*' and '?' matching is retained.
+
+Test preparation
+----------------
+Copy SD_TEST_FILES/EXECDEMO.TXT to:
+
+    /ATOM/TAPES/EXECDEMO.TXT
+
+Tests
+-----
+Start in /ATOM/TAPES.
+
+A. EXEC
+    *CAT
+    *EXEC EXECDEMO.TXT
+    LIST
+    RUN
+
+Expected: the four BASIC lines have been entered by the original AtoMMC ROM.
+
+B. Wildcards
+    *CAT *
+    *CAT *.TXT
+    *CAT INV*
+    *CAT GAMES\SN*
+
+Use names/directories that exist on your card for the last two tests.
+
+C. Paths
+    *CWD /
+    *CAT
+    *CWD Games01
+    *CAT
+    *CWD ..
+    *CAT
+    *CAT /Games01/*
+    *CAT ./*
+
+D. INFO wildcard/path behaviour
+    *INFO INV*
+    *INFO Games01\SN*
+
+Use matching files that exist on the card.
+
+Regression
+----------
+Also verify:
+    *LOAD / *RUN
+    SAVE / *SAVE
+    *DELETE
+    *REN
+    *MKDIR / *RMDIR
+    Axxx ROM banking
+    InvadersZX keyboard
+    sound
+
+Notes
+-----
+AtoMMC documentation states that *EXEC presents an ANSI text file to the Atom
+as if typed. The ROM discards LF characters; CR remains the line terminator.
+
+The genuine AtoMMC ROM remains responsible for command parsing and EXEC.
+V121 only supplies the controller/filesystem behaviour it expects.

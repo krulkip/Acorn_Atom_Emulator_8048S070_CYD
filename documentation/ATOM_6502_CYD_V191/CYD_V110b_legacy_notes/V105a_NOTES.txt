@@ -1,0 +1,14 @@
+ATOM 6502 CYD V105a
+
+Correction to V105 automatic named LOAD mounting.
+
+V105 hooked $F958, which is the start of the Kernel LOAD command handler. At that point the filename/control block has not yet been parsed.
+
+The Kernel sequence is:
+  $F966 JSR $FA76   ; parse/build LOAD filename/control data
+  $F969 LDX #$C9
+  $F96B JMP ($020C) ; OSLOAD vector
+
+V105a therefore performs automatic ATM lookup/mount at the opcode fetch at $F96B. At that point X=$C9 and the genuine Atom LOAD control block is valid.
+
+No other functional changes from V105/V104b.

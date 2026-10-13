@@ -1,0 +1,20 @@
+V120c audio sampling test
+
+Based directly on V120.
+
+Only intended functional change:
+- I2S/audio sample rate: 40 kHz -> 80 kHz
+
+Everything else from V120 remains unchanged:
+- raw PC2 edge timing
+- same AC-coupling/high-pass model
+- no V120a low-pass changes
+- no synthetic decay
+- AtoMMC/filesystem/ROM banking/keyboard unchanged
+
+Purpose:
+- preserve the already-correct alien/turret/mothership destruction sounds
+- recover the missing fire sound
+- reduce the aliasing/tik-tok character of the mothership flying sound
+
+At 80 kHz, one sample is 12.5 us instead of 25 us.

@@ -1,0 +1,65 @@
+ATOM 6502 CYD V070
+===================
+
+Baseline
+--------
+Built directly from clean V069. No V069a/b/c diagnostics are included.
+
+Purpose
+-------
+Add an explicit opt-in physical keyboard mode for machine-code games which
+poll the Atom 8255 keyboard matrix directly instead of calling OSRDCH.
+
+Default
+-------
+GAMEKEYS is OFF at boot. Keyboard behaviour is exactly V069.
+
+Host commands
+-------------
+Type these in the serial terminal:
+
+  GAMEKEYS ON
+  GAMEKEYS OFF
+
+They are ESP32 host commands and are not sent to the Atom.
+
+GAMEKEYS ON mapping
+-------------------
+Terminal Z     -> physical Atom Z     (row 1, column 5)
+Terminal X     -> physical Atom X     (row 3, column 5)
+Terminal SPACE -> physical Atom SPACE (row 9, column 0)
+
+All other terminal keys keep the existing V069 path. ESC remains the special
+immediate physical ESC contact exactly as before.
+
+Because a serial terminal supplies characters rather than key-down/key-up
+events, Z/X/SPACE are represented as ~90 ms physical pulses measured in
+emulated 6502 cycles. Terminal auto-repeat renews the pulse.
+
+GAMEKEYS OFF
+------------
+Clears any active game-key pulse and immediately returns to the normal V069
+OSRDCH/FIFO keyboard behaviour.
+
+Why opt-in
+----------
+Globally changing Z/X/SPACE would risk BASIC, P-Charme, editors and other
+software. V070 changes nothing unless GAMEKEYS ON is explicitly requested.
+
+Invaders test
+-------------
+Use the patched INVADERSZX.atm, whose game code scans physical Z/X/SPACE.
+
+1. Boot V070.
+2. Load and RUN INVADERSZX normally.
+3. In the serial terminal type:
+     GAMEKEYS ON
+4. Test:
+     Z     left
+     X     right
+     SPACE fire
+5. When finished:
+     GAMEKEYS OFF
+
+The original INVADERS.atm still uses CTRL/SHIFT/REPT and is not changed by
+this feature.

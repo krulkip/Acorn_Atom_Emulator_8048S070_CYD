@@ -1,0 +1,14 @@
+V156 - verified ATBASIC3 numeric PRINT trace
+
+Based directly on clean V155 baseline.
+No behavioural changes. ASBK remains absent; no vector or zero-page restoration.
+
+Adds diagnostic trace at physical addresses verified in the actual ATBASIC3 image:
+- $5B17 expression evaluator
+- $5ECD numeric-to-string conversion
+- $4E25 post-conversion length/buffer check
+- $7533 character output
+
+At conversion points, logs CPU registers and BBC numeric zero-page $2A-$36.
+At $4E25, logs $36 and $9E00-$9E0F.
+At $7533, logs output character and live WRCVEC.

@@ -1,0 +1,47 @@
+ATOM 6502 CYD V073d
+====================
+
+Built from V073c.
+
+Observed
+--------
+V073c:
+- fast LOAD works (<1 second)
+- *CAT lists all files correctly
+- no prompt after the final entry
+
+V073d fix
+---------
+The previous versions tried to assert a synthetic physical CTRL key after the
+last catalogue header. That still left the accelerated ROM header-search
+routine dependent on keyboard/leader timing.
+
+The Atom ROM contract is explicit:
+  $FB8E returns with V clear when CTRL aborts the header search.
+  $FA34 tests V and, when clear, falls through to:
+      $FA36 PLP
+      $FA37 RTS
+
+Therefore, only when:
+- ROM-native *CAT is active, AND
+- the last synthetic catalogue header has already been delivered,
+
+V073d intercepts the next opcode fetch at $FB8E:
+- clears V
+- substitutes RTS
+
+The real caller at $FA34 then performs the normal ROM exit. We do NOT jump the
+PC to the prompt and do NOT bypass the *CAT caller.
+
+This has no effect on:
+- fast LOAD
+- normal cassette files
+- SAVE
+- keyboard/GAMEKEYS
+- P-Charme
+- sound/video
+
+Expected:
+  *CAT
+  -> all files
+  -> immediate '>' prompt

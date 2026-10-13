@@ -1,0 +1,12 @@
+V176 - genuine Atom CLEAR 0 before BBC BASIC
+
+Based directly on working V174.
+
+- Keeps proven SHIFT+BREAK reset and one-character-per-OSRDCH injection.
+- Replaces V174 direct VRAM clearing with genuine Atom BASIC command sequence:
+    CLEAR 0
+    LINK #4000
+- CLEAR 0 is the Atom command (CLS is not; V175 produced Error 94).
+- This lets Atom clear the Mode-0 screen and reset its own cursor/home state before BBC BASIC starts.
+- Removes the V174 direct $8000-$81FF memset on BBC entry.
+- ASBK remains disabled. Ordinary BREAK unchanged.

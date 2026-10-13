@@ -1,0 +1,26 @@
+V057 - add 6847 Mode 2 graphics renderer
+
+Baseline: V056 (confirmed working Mode 0 text and Mode 1 graphics).
+
+Changes:
+- Preserves V056 Mode-0 and Mode-1 renderers unchanged.
+- Adds Mode 2 ($70) rendering for 128x96 one-bit graphics.
+- Reads Mode-2 VRAM from $8000-$85FF (1536 bytes, 16 bytes/row).
+- Uses bit 7 as the leftmost pixel, matching the Atom ROM mask table.
+- Renders each logical pixel as a 2x2 native 6847 raster block, producing
+  a 256x192 image centred on the TFT.
+- Uses the same integer scaling of the native 256x192 raster as Mode 1, so
+  larger TFT_eSPI panels can scale without changing Atom graphics logic.
+- Adds an independent Mode-2 VRAM cache; mode changes force the appropriate
+  redraw while avoiding redundant writes of cleared black graphics RAM.
+
+Deliberately unchanged:
+- V056 Mode-1 128x64 renderer.
+- V055 Mode-0 character mapping, including $40 = blank.
+- V054 F-ROM mapping fix.
+- Keyboard matrix, ESC/BREAK, flyback timing, CPU/VIA behaviour.
+- TFT_eSPI board selection via tft_board_select.h / tft_setup.h.
+
+Not implemented yet:
+- Mode 3 and Mode 4 graphics.
+- Full Mode-0 semigraphics colour rendering.

@@ -1,0 +1,55 @@
+ATOM 6502 CYD V109d
+====================
+
+Baseline
+--------
+Built from V109b, NOT from the regressed V109c.
+
+Why
+---
+V109c is rejected.  Its attempt to redirect execution from the ROM's
+unsupported-command path did not make *CAT GAMES1 legal and disturbed the
+subsequent LOAD workflow.
+
+V109d changes only two things relative to V109b.
+
+1. Safe *CAT directory preprocessing
+------------------------------------
+The Atom manual documents OSCLI at $FFF7.  OSCLI reads the complete command
+line from $0100.
+
+At opcode fetch $FFF7, V109d checks only for:
+
+  CAT <directory>
+
+If present it:
+  - changes atomTapeCurrentDir,
+  - rewrites $0100 to plain "CAT" + CR,
+  - then lets the genuine Atom ROM OSCLI run unchanged.
+
+Therefore the ROM sees legal plain *CAT syntax and uses the existing V109
+virtual catalogue for the newly selected directory.
+
+No CPU PC redirection is performed.
+No F926 changes are made.
+OSLOAD / Turbo LOAD is identical to V109b.
+
+2. Frogger direct-key timing
+----------------------------
+Generic physical-key support remains as in V109b.
+
+Only the host repeat contact extension changes:
+  V109b: 70 ms
+  V109d: 40 ms
+
+The initial key pulse remains 20 ms.
+
+Tests
+-----
+1. Fresh boot:
+     *CAT
+     *CAT GAMES1
+     *CAT ..
+2. LOAD "FROGGER" must auto-mount FROGGER, not a previously mounted game.
+3. Test T/B/F/H quick repeated taps.
+4. Test InvadersZX Z/X/SPACE and ~BREAK.

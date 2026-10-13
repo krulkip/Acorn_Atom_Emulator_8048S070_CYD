@@ -1,0 +1,13 @@
+V157 - BBC BASIC evaluator return/type diagnostic
+
+Based directly on clean V156/V155 baseline. No behavioural changes.
+ASBK remains absent; no vector or zero-page restoration is performed.
+
+Adds trace points at the verified ATBASIC3 PRINT caller:
+- $4E05: instruction immediately after outer JSR $5B17 returns
+- $4E0F: TYA immediately before the string/numeric type branch
+
+Logs A/X/Y, stack pointer and $2A-$36. The $4E0F line also states whether
+Y will select STRING/$4E25 or NUMERIC/$5ECD.
+
+Existing V156 traces at $5B17, $5ECD, $4E25 and $7533 are retained.

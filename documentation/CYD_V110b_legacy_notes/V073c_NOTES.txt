@@ -1,0 +1,34 @@
+ATOM 6502 CYD V073c
+====================
+
+Built from V073b.
+
+Observed
+--------
+Fast LOAD: works in <1 second.
+Fast *CAT: all catalogue entries display correctly, but no '>' prompt returns.
+
+Cause
+-----
+At the end of the final synthetic CAT header, V073b immediately marked the
+virtual cassette DONE/inactive. That disabled the direct cassette hooks before
+the genuine ROM made its next header-search pass and observed the synthetic
+CTRL key.
+
+Fix
+---
+After the final CAT header:
+- keep the virtual cassette logically active
+- assert synthetic CTRL
+- let the genuine ROM re-enter its normal header search
+- do NOT take the fast SHIFT/leader-skip shortcut for this final pass
+- when the ROM reaches its existing CTRL-abort exit hook, then mark the
+  catalogue tape DONE/inactive and release CTRL
+
+Expected
+--------
+*CAT
+  -> all files display
+  -> automatic return to '>' prompt
+
+Fast LOAD behavior is unchanged.

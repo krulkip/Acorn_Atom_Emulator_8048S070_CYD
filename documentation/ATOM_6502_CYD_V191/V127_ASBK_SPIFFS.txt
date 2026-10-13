@@ -1,0 +1,25 @@
+V127 - resident ASBK-S V21
+
+SPIFFS:
+  /ASBK-S_v21.bin
+  load address $1000
+  length       $0661 (1633 bytes)
+  end address  $1660
+  LL97 entry   $1005
+
+Startup:
+  1. fakemem_init_atom() copies ASBK-S_v21.bin into emulated RAM $1000-$1660.
+  2. reset6502() starts the genuine Atom Kernel RESET at $FF3F.
+  3. V127 waits until the CPU first reaches Kernel OSRDCH at $FE94.
+  4. V127 emulates JSR $1005:
+       push $FE93 on the emulated 6502 stack
+       PC = $1005
+  5. LL97 installs ASBK-S vectors/state and returns with RTS.
+  6. RTS returns to $FE94 and normal Atom input continues.
+
+This is deliberately done after Kernel RESET because calling LL97 before the
+Kernel RESET routine runs would allow the Kernel to overwrite ASBK-S page-2
+vectors again.
+
+Host BREAK re-arms the same one-shot initialization so ASBK-S is restored
+after every Atom reset.

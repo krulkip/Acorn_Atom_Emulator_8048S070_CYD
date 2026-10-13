@@ -1,0 +1,27 @@
+ASBK-S V24 - static AtoMMC filing-vector compatibility
+======================================================
+
+Base: ASBK-S V22, which testing proved keeps both *CAT and Axxx ROM cycling working.
+
+V23 dynamically copied the current $0204-$021B vectors each time LL97 ran.
+V24 does NOT do that. LL97 is exactly the proven V22 code.
+
+V24 changes only V22's saved compatibility table R. In addition to V22's
+AtoMMC COMVEC $E0DE it stores the filing vectors from the exact ATMMC3E
+V3.02E ROM bundled with V132:
+
+  $0204 IRQVEC = $A000   (unchanged V22)
+  $0206 COMVEC = $E0DE   (unchanged V22 AtoMMC patch)
+  $0208 WRCVEC = $FE52   (unchanged)
+  $020A RDCVEC = $FE94   (unchanged; ASBK later installs its own hook)
+  $020C LODVEC = $E3C7
+  $020E SAVVEC = $E493
+  $0210 RDRVEC = $E8AF
+  $0212 STRVEC = $E8DA
+  $0214 BGTVEC = $E886
+  $0216 BPTVEC = $E86A
+  $0218 FNDVEC = $E81C
+  $021A SHTVEC = $E84D
+
+No controller, filename-resolution, cassette auto-mount, or post-ASBK vector
+repair code is changed in V136.

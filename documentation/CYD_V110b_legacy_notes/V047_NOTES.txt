@@ -1,0 +1,16 @@
+V047 - cycle-timed flyback diagnostic/fix
+
+Baseline: V046.
+
+Single logical change:
+- B002 vertical blank is generated from emulated 6502 clockticks rather than wall-clock esp_timer time.
+- 16667 emulated cycles/frame, 2048 cycles active-low VBL, REPT remains inactive/high.
+
+Unchanged:
+- V046 ROM-synchronized keyboard queue/commit logic.
+- Keyboard matrix mapping and SHIFT/CTRL handling.
+- OSRDCH remains the original Atom ROM routine at FE94.
+- BASIC, CPU instruction implementation, VIA, video renderer, startup RETURN.
+
+First test: type 123ABC then RETURN.
+Second test if successful: 10 PRINT "HELLO"' ; 20 END ; RUN.

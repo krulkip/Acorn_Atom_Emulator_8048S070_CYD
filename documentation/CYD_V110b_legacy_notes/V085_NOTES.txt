@@ -1,0 +1,8 @@
+V085 - Invaders FIRE diagnostic
+Built directly from stable V079a.
+
+Traces $356C LDA $B002 / $356F EOR #$04 / $3571 STA $B002.
+[FIRE-READ] shows B002/PC2 and GPIO26.
+[FIRE-WRITE] shows Port-C/PC2 old->new.
+[FIRE-GPIO] shows actual GPIO26 before->after; EDGE is decisive.
+No V084 queued audio code is present.

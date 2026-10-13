@@ -1,0 +1,46 @@
+ATOM 6502 CYD V101a
+====================
+
+Built directly from V101 after hardware/game test.
+
+Observed with V101
+------------------
+- Normal BASIC typing such as PRINT "XYZ" works correctly.
+- Z / X / SPACE are seen by INVADERSZX automatically.
+- No queued-key spillover occurs after ~BREAK.
+- During gameplay all three direct keys behave as though held/locked for too long.
+
+Cause
+-----
+V101 retained the historical GAMEKEYS physical pulse length of 90000 emulated
+6502 cycles (~90 ms at the Atom's nominal 1 MHz CPU).  INVADERSZX therefore
+sees the same key asserted over several consecutive game scans.
+
+V101a change
+------------
+ONLY the automatic direct-key physical hold interval is changed:
+
+    DIRECT_KEY_PULSE_CYCLES  90000 -> 20000
+
+This is approximately 20 ms at 1 MHz: long enough for a normal game scan to
+observe the contact, but short enough to behave as a single tap rather than a
+multi-frame held key.
+
+Unchanged from V101
+-------------------
+- One ordered keyboard FIFO.
+- Z / X / SPACE remain ordinary OSRDCH characters at the BASIC prompt.
+- Direct 8255 matrix scans can claim Z / X / SPACE automatically.
+- Genuine ROM FE71/OSRDCH scans do not see the direct synthetic contact.
+- No GAMEKEYS ON/OFF command or state.
+- No $9FFF, $BFF2, game signature, PC trap, or Invaders-specific emulator code.
+- ESC, ~BREAK, cassette, video, audio, RND, CPU and all other V100/V101 behaviour.
+
+Test
+----
+1. Boot normally.
+2. Verify PRINT "XYZ" behaves normally.
+3. Run the existing patched INVADERSZX without GAMEKEYS ON.
+4. Tap Z and X: movement should be a short step rather than a prolonged hold.
+5. Tap SPACE: one short fire action should result.
+6. Use ~BREAK and verify there is still no spillover at the BASIC prompt.

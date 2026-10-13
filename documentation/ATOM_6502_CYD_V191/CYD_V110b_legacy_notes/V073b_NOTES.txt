@@ -1,0 +1,36 @@
+ATOM 6502 CYD V073b
+====================
+
+Built from V073a.
+
+Fix
+---
+V073a fast LOAD worked in under 1 second, but ROM-native *CAT showed the first
+entry correctly and then garbage.
+
+Cause
+-----
+The genuine Atom *CAT reads only each cassette block HEADER. It does not call
+OSBGET for that block's data/checksum.
+
+With a physical/FSK tape, those bytes continue to pass in time before the next
+header. With direct OSBGET delivery, V073a left the byte pointer parked at the
+dummy data byte after a catalogue header. The next header search therefore
+consumed dummy data/checksum as if they were the next preamble/header.
+
+V073b behavior
+--------------
+Only while atomCatVirtualActive:
+- deliver all genuine header bytes through ROM OSBGET
+- after the final header byte, skip that synthetic catalogue block's unused
+  dummy data/checksum
+- position directly at the next catalogue block
+- after the last header, assert the existing automatic CTRL so the genuine
+  ROM returns to the prompt
+
+Normal fast LOAD is unchanged.
+
+Expected
+--------
+*CAT should again show only valid catalogue entries and then return to '>'.
+Fast LOAD should remain <1 second for INVADERSZX.

@@ -1,0 +1,28 @@
+CYD V190 PORT4
+================
+
+Based directly on PORT3.
+
+Reason:
+PORT3 reduced the linker DRAM overflow from 32976 bytes to only 208 bytes,
+confirming removal of the eight 4 KB A000 ROM cache banks solved the main
+CYD RAM problem.
+
+PORT4 recovers a further 512 bytes of static DRAM without reducing any
+AtoMMC transfer size. atommc_stub.cpp previously allocated two separate
+512-byte arrays for PIC globalData read and write phases. The AtoMMC
+protocol phases are sequential, so PORT4 uses one shared 512-byte
+globalData buffer for both directions.
+
+No changes to:
+- 64 KB Atom memory
+- CYD display / TFT code
+- SD hardware
+- ASBK-S / A000 bank switching logic
+- BBC BASIC path
+- keyboard scanner / GPIO21+GPIO22
+- V190 external FE71 key-event latch
+- BREAK handling
+
+Expected linker improvement versus PORT3: 512 bytes, giving roughly 304
+bytes margin relative to the reported 208-byte overflow.

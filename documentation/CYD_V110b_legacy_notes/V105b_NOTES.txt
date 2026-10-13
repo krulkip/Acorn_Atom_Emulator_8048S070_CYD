@@ -1,0 +1,26 @@
+ATOM 6502 CYD V105b
+
+Correction to V105/V105a automatic named LOAD.
+
+The Atom Kernel documentation identifies $F96E as the cassette OSLOAD routine entry.
+At $F96E, X is guaranteed to point to the five-byte zero-page LOAD control block;
+0,X and 1,X point to the CR-terminated requested filename.
+
+V105a tried to auto-mount at $F96B, the JMP ($020C) OSLOAD-vector instruction.
+Although immediately adjacent, this was not a robust documented interface point.
+
+V105b moves the auto-mount lookup to the opcode fetch at $F96E.
+
+V105a also called atom_tape_rewind() unconditionally after lookup.  If no automatic
+match was found, that rewound the previously mounted cassette and could cause an old
+program to load again.  V105b removes that unconditional rewind.  A successful
+atomTapeBuildFromAtm() already rewinds the newly mounted ATM itself.
+
+Expected fresh-boot test:
+  LOAD "INVADERSZX"
+
+Expected Serial:
+  [AUTO-MOUNT] LOAD "INVADERSZX" -> /ATOM/TAPES/INVADERSZX.atm
+  [TAPE-FAST] Direct ROM OSBGET byte delivery active
+
+All V104b Turbo SAVE, screenshots, keyboard, display and manual *MOUNT behaviour are unchanged.

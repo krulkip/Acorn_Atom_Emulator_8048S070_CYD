@@ -1,0 +1,21 @@
+ATOM CYD V049 - Port-B modifier visibility fix
+
+Baseline: V048.
+
+Only logical change:
+- SHIFT (B001 bit 7) and CTRL (B001 bit 6) are now returned independently
+  of kbd_row. V048 preserved the modifier variables after FEB1 but only
+  drove the Port-B modifier bits while kbd_row >= 0, so shifted punctuation
+  still decoded as its unshifted number key.
+
+Unchanged:
+- real Atom OSRDCH at FE94
+- 10x6 matrix mapping
+- ROM-synchronized key acquisition/commit
+- cycle-timed 60 Hz VBL
+- CPU/BASIC/video/VIA behavior
+- synthetic startup RETURN
+
+Expected regression test:
+  10 PRINT "HELLO"'
+should echo with the quote/apostrophe characters, not as 2 and 7.

@@ -1,0 +1,19 @@
+ATOM 6502 CYD V050
+==================
+
+Baseline: V049.
+
+Single logical change:
+- Host ESC (0x1B) now asserts the real Atom ESC matrix contact immediately
+  at row 0 / column 5 instead of waiting in the OSRDCH key queue.
+- Atom BASIC directly polls B001 bit 5 at C504 while programs run; therefore
+  ESC must be visible even when OSRDCH is not active.
+- ESC is released when BASIC takes the direct escape path at C547, or when
+  OSRDCH has acquired it at FEB1.
+
+Unchanged:
+- Normal 10x6 matrix mapping and queued-key handshake
+- SHIFT/CTRL handling
+- cycle-timed 60 Hz flyback
+- CPU instruction implementation, VIA, video renderer, ROMs, BASIC
+- synthetic boot RETURN

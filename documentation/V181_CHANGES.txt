@@ -1,0 +1,7 @@
+V181
+====
+
+Build fix for V180:
+- Added the missing atom_atommc2_banner_at_8000() implementation.
+- It matches the complete Atom screen-code string "ACORN ATOM + ATOMMC2" at $8000 before invoking the existing ACORN ATOM+ cleanup.
+- No changes to V178/V179 ASBK-S V24, BREAK/SHIFT+BREAK, BBC LINK #4000, or BBC screen-home behaviour.

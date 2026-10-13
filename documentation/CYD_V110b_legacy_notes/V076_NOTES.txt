@@ -1,0 +1,64 @@
+ATOM 6502 CYD V076
+===================
+
+Baseline
+--------
+Built directly from V075a / V074 feature set.
+
+Measured before V076
+--------------------
+Idle at >        : ~0.403 MHz
+10 GOTO 10       : ~0.56 MHz
+INVADERS gameplay: ~0.53 MHz
+
+Cause
+-----
+The previous timing method delayed once every 256 instructions. Since 6502
+instructions take different cycle counts, the resulting MHz depended strongly
+on workload.
+
+V076 governor
+-------------
+Normal execution is governed by actual clockticks6502:
+
+  1,000,000 emulated 6502 cycles = 1.000 real second
+
+Equivalently:
+  1 emulated cycle = 1 real microsecond
+
+The CPU runs freely while behind schedule. If it gets ahead, V076 yields and
+then performs a very short fine wait to align with the target cycle timeline.
+
+The governor periodically rebases after about one million cycles to avoid
+long-term arithmetic drift.
+
+Fast cassette
+-------------
+During the V073+ fast virtual-cassette path, the 1 MHz governor is intentionally
+disabled. This preserves sub-second LOAD speed. When entering or leaving tape
+turbo the governor reference is rebased so normal execution does not try to
+catch up or compensate.
+
+BREAK
+-----
+~BREAK also rebases both governor and diagnostic timing after reset.
+
+Diagnostic retained
+-------------------
+The V075 [CPU] line remains enabled so the result can be verified directly.
+
+Expected:
+  idle at >         ~1.000 MHz
+  10 GOTO 10        ~1.000 MHz
+  INVADERS gameplay ~1.000 MHz
+
+Please send several [CPU] lines from all three cases and report how Invaders
+speed and sound compare with V075a.
+
+All V074/V073d functionality remains:
+- ~BREAK
+- fast SD LOAD
+- working *CAT with prompt return
+- GAMEKEYS ON/OFF
+- P-Charme
+- version-derived boot screen

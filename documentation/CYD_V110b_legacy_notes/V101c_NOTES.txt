@@ -1,0 +1,51 @@
+ATOM 6502 CYD V101c - automatic direct-scanner held-key approximation
+======================================================================
+
+Baseline
+--------
+Derived from V101a.  All V100 emulator behaviour remains unchanged except for
+the automatic Z/X/SPACE direct-matrix path introduced in V101.
+
+Problem observed in V101/V101a
+------------------------------
+A quick Z/X/SPACE tap worked, but holding a PC key caused terminal auto-repeat
+to enqueue many copies.  InvadersZX then continued to move/fire after the host
+key had been released because it was consuming those stored repeats.
+
+V101c behaviour
+---------------
+A serial terminal provides characters, not physical key-down/key-up events, so
+V101c approximates a held key without ever queueing future game actions:
+
+1. Z/X/SPACE initially enter the ordinary ordered keyboard FIFO exactly like
+   any other character.  Therefore BASIC/OSRDCH typing remains normal.
+2. If software directly scans the matching 8255 matrix row, that FIFO entry is
+   immediately removed and ownership transfers to the direct-key state.
+3. The first physical contact is short (~20 ms), preserving the good quick-tap
+   behaviour measured in V101a.
+4. If the terminal subsequently sends auto-repeat copies of the SAME key,
+   those repeats are NOT placed in the FIFO.  They refresh the physical held
+   state instead.
+5. Each repeat keeps the contact alive for ~70 ms.  When repeats stop, the key
+   automatically releases after that short timeout.
+6. Ownership is remembered (without asserting the key) for ~700 ms so the
+   delayed first Windows/terminal auto-repeat can be recognised.
+7. Reading the matrix never consumes an asserted direct key.  A game can see
+   it on every scan while it is active.
+8. ~BREAK / keyboard release / flush clears all direct-key state.
+
+Important design standard
+-------------------------
+The emulator remains generic.  There is no InvadersZX detection, PC trap,
+magic Atom RAM/I/O address, or GAMEKEYS ON/OFF mode.  InvadersZX simply scans
+the real Atom keyboard matrix for its already-patched Z/X/SPACE controls.
+
+Expected test
+-------------
+- BASIC: PRINT "XYZ" remains normal.
+- Quick tap Z/X/SPACE in InvadersZX: one short response.
+- Hold Z or X: after terminal auto-repeat starts, movement continues while held
+  and stops promptly when released.
+- Hold SPACE: firing continues according to the game's own scan/fire logic and
+  stops promptly after release.
+- After ~BREAK: no queued Z/X/SPACE should spill into BASIC.

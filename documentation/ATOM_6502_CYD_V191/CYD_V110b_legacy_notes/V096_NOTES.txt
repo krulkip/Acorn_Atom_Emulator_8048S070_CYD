@@ -1,0 +1,44 @@
+ATOM 6502 CYD V096
+===================
+
+Built directly from tested V095.
+
+Still 100% generic audio:
+- no Invaders addresses
+- no fire special case
+- no death special case
+- no alien/mothership special case
+
+V095 result:
+- normal sounds audible
+- fire audible
+- alien/mothership destroy audible
+- tones slightly too high
+- cannon death still inaudible
+
+V096 change:
+The generic model no longer turns every PC2 edge into an independent fixed
+pulse. Instead each edge adds a signed excitation to a short-lived analogue
+state, which then decays.
+
+This should:
+1. reduce the tendency to emphasize twice-per-cycle edge rate
+2. retain more energy during dense random PC2 bursts
+3. keep opposite edge polarities distinct
+4. remain useful for all Atom software, not just Invaders
+
+Initial tuning:
+  edge kick        = 92
+  decay steps      = 8
+  step interval    = 75 us
+  decay multiplier = 5/8 per step
+
+Total decay observation is about 600 us, but because new edges add/subtract
+from the existing state, dense random sequences can build a noise-like burst.
+
+Test:
+- march pitch
+- fire
+- alien destroy variants
+- mothership destroy
+- cannon death

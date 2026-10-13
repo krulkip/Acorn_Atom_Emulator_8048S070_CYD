@@ -1,0 +1,11 @@
+V151 BBC BASIC character-vector diagnostic
+==========================================
+Based directly on V150 (which itself is based on the known-good V139 baseline).
+
+Only functional change from V150:
+- On first entry into ATBASIC3 ($4000-$7FFF), restore both clean Atom character vectors:
+    WRCVEC $0208/$0209 -> $FE52
+    RDCVEC $020A/$020B -> $FE94
+- COMVEC and all AtoMMC filing vectors remain untouched.
+- No ASBK memory/workspace clearing.
+- No 6522/memory-map changes.
